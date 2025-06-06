@@ -24,30 +24,33 @@ const JobListItem: React.FC<JobListItemProps> = ({ job, onEdit, onDelete }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="p-4 bg-teal-200 rounded-4xl shadow-md hover:shadow-lg transition-shadow"
+      whileHover={{ scale: 1.02, boxShadow: "0 0px 12px rgba(255, 255, 255, 0.5)", cursor: "pointer" }}
+      style={{ backgroundColor: 'rgba(219, 255, 246, 1.0)' }}
+      className="py-4 rounded-sm shadow-md hover:shadow-lg transition-shadow font-ivysoft"
+      
     >
-      <div className="flex justify-between items-center px-4">
+      <div className="flex justify-between items-center px-6">
         
-        <div className="flex gap-1 justify-center items-center text-xl font-semibold">
-          <h3 className=" text-gray-900">
-            {job.position} - 
+        <div className="flex flex-col gap-1 justify-center items-start text-xl font-semibold">
+          <h3 className="text-black">
+            {job.position}
           </h3>
-          <p className="text-gray-600">{job.company}</p>
+          <p className="text-gray-800 text-sm">{job.company}</p>
         </div>
 
-        <div className="flex items-center space-x-6">
+        <div className="flex items-center space-x-6 font-medium">
           {/* Location */}
           {job.location && (
-            <p className="text-sm text-gray-600">📍 {job.location}</p>
+            <p className="text-sm text-gray-800">📍 {job.location}</p>
           )}
 
           {/* Salary */}
           {job.salary && (
-            <p className="text-sm text-gray-600">💰 {job.salary}</p>
+            <p className="text-sm text-gray-800">💰 {job.salary}</p>
           )}
 
           {/* Date */}
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-gray-800">
             Applied: {new Date(job.appliedDate).toLocaleDateString()}
           </div>
         </div>
