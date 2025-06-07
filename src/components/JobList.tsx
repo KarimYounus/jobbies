@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import JobListItem from "./JobListItem";
 import { Job } from "./JobListItem";
+import JobView from "./JobView";
 
 interface JobListProps {
   title: string;
@@ -33,12 +34,31 @@ const defaultItems: Job[] = [
 ];
 
 const JobList: React.FC<JobListProps> = ({ title, items, children }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false); // State to track if the list is expanded
+
+  // State to manage selected job and job view modal
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [isJobViewOpen, setIsJobViewOpen] = useState(false);
+
+  // Function to handle job selection for viewing details
+  const handleJobView = (job: Job) => {
+    setSelectedJob(job);
+    setIsJobViewOpen(true);
+  }
+
+  // Function to close the job view modal
+  const handleCloseJobView = () => {
+    setSelectedJob(null);
+    setIsJobViewOpen(false);
+  }
+
+  // State to track content and header heights for animation
   const [contentHeight, setContentHeight] = useState(0);
   const [headerHeight, setHeaderHeight] = useState(0);
   const contentRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
 
+  // Function called when isExpanded changes to update heights
   useEffect(() => {
     if (contentRef.current) {
       setContentHeight(contentRef.current.scrollHeight);
@@ -97,14 +117,23 @@ const JobList: React.FC<JobListProps> = ({ title, items, children }) => {
             job={defaultItems[0]}
             onEdit={(job) => console.log("Edit job:", job)}
             onDelete={(id) => console.log("Delete job with id:", id)}
+            onView={handleJobView}
           />
           <JobListItem
             job={defaultItems[1]}
             onEdit={(job) => console.log("Edit job:", job)}
             onDelete={(id) => console.log("Delete job with id:", id)}
+            onView={handleJobView}
           />
         </div>
       </motion.div>
+
+      <JobView
+        job={selectedJob}
+        isOpen={isJobViewOpen}
+        onClose={handleCloseJobView}
+      />
+
     </motion.div>
   );
 };

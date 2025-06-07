@@ -1,5 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
+import Icon from "@mdi/react";
+import { mdiMapMarker, mdiCash } from "@mdi/js";
 
 export interface Job {
   id: string;
@@ -16,37 +18,45 @@ interface JobListItemProps {
   job: Job;
   onEdit?: (job: Job) => void;
   onDelete?: (jobId: string) => void;
+  onView?: (job: Job) => void;
 }
 
-const JobListItem: React.FC<JobListItemProps> = ({ job, onEdit, onDelete }) => {
+const JobListItem: React.FC<JobListItemProps> = ({ job, onEdit, onDelete, onView }) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      whileHover={{ scale: 1.02, boxShadow: "0 0px 12px rgba(255, 255, 255, 0.5)", cursor: "pointer" }}
-      style={{ backgroundColor: 'rgba(219, 255, 246, 1.0)' }}
+      whileHover={{
+        scale: 1.02,
+        boxShadow: "0 0px 12px rgba(255, 255, 255, 0.5)",
+        cursor: "pointer",
+      }}
+      onClick={() => {onView?.( job )}}
+      style={{ backgroundColor: "rgba(219, 255, 246, 1.0)" }}
       className="py-4 rounded-sm shadow-md hover:shadow-lg transition-shadow font-ivysoft"
-      
     >
       <div className="flex justify-between items-center px-6">
-        
         <div className="flex flex-col gap-1 justify-center items-start text-xl font-semibold">
-          <h3 className="text-black">
-            {job.position}
-          </h3>
+          <h3 className="text-black">{job.position}</h3>
           <p className="text-gray-800 text-sm">{job.company}</p>
         </div>
 
         <div className="flex items-center space-x-6 font-medium">
           {/* Location */}
           {job.location && (
-            <p className="text-sm text-gray-800">📍 {job.location}</p>
+            <div className="flex items-center space-x-2">
+              <Icon path={mdiMapMarker} size={1} className="text-gray-600" />
+              <span className="text-sm text-gray-800">{job.location}</span>
+            </div>
           )}
 
           {/* Salary */}
           {job.salary && (
-            <p className="text-sm text-gray-800">💰 {job.salary}</p>
+            <div className="flex items-center space-x-2">
+              <Icon path={mdiCash} size={1} className="text-gray-600" />
+              <span className="text-sm text-gray-800">{job.salary}</span>
+            </div>
           )}
 
           {/* Date */}

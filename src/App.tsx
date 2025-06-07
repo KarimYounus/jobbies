@@ -4,13 +4,13 @@ import JobList from "./components/JobList";
 
 function App() {
   return (
-    <motion.div className="flex flex-col w-full justify-center items-center">
+    <motion.div className="flex flex-col w-full justify-center items-center font-ivysoft">
       {/* Header Section */}
       <motion.div className="flex flex-row items-center justify-between w-full pl-5 mb-2 backdrop-blur-6xl shadow-xl"
         style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, type: "spring", stiffness: 300 }}
+        transition={{ duration: 0.5, ease: [0.85, 0, 0.15, 1] }}
       >
         {/* Logo */}
         <motion.img
@@ -41,7 +41,7 @@ function App() {
 
       <motion.div className="flex flex-col items-center w-full gap-4 px-4 mt-2">
         <JobList title="Ongoing" items={[]} />
-        <JobList title="Archived" items={[]} />
+        <JobList title="No Response" items={[]} />
         <JobList title="Rejected" items={[]} />
       </motion.div>
     </motion.div>
