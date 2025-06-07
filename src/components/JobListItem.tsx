@@ -2,17 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import Icon from "@mdi/react";
 import { mdiMapMarker, mdiCash } from "@mdi/js";
-
-export interface Job {
-  id: string;
-  company: string;
-  position: string;
-  status: "applied" | "interview" | "rejected" | "offer" | "archived";
-  appliedDate: string;
-  salary?: string;
-  location?: string;
-  notes?: string;
-}
+import { Job } from "../types"; 
 
 interface JobListItemProps {
   job: Job;

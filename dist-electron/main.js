@@ -13,7 +13,7 @@ let win;
 function createWindow() {
   win = new BrowserWindow({
     width: 800,
-    height: 600,
+    height: 800,
     transparent: true,
     backgroundMaterial: "acrylic",
     icon: path.join(process.env.VITE_PUBLIC, "electron-vite.svg"),

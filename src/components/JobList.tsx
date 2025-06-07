@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import JobListItem from "./JobListItem";
-import { Job } from "./JobListItem";
+import { Job } from "../types"; 
 import JobView from "./JobView";
 
 interface JobListProps {
@@ -20,6 +20,16 @@ const defaultItems: Job[] = [
     salary: "$80,000",
     location: "New York, NY",
     notes: "Initial application submitted.",
+    questions: [
+      {
+        question: "What is your experience with React?",
+        answer: "I have 3 years of experience working with React in various projects."
+      },
+      {
+        question: "How do you handle state management in large applications?",
+        answer: "I prefer using Redux for state management in large applications."
+      }
+    ]
   },
   {
     id: "2",
