@@ -16,7 +16,7 @@ const defaultItems: Job[] = [
     company: "Tech Corp",
     position: "Software Engineer",
     status: "applied",
-    appliedDate: "2023-10-01",
+    appliedDate: "2025-06-01",
     salary: "$80,000",
     location: "New York, NY",
     notes: "Initial application submitted.",
@@ -29,14 +29,19 @@ const defaultItems: Job[] = [
         question: "How do you handle state management in large applications?",
         answer: "I prefer using Redux for state management in large applications."
       }
-    ]
+    ],
+    cv: {
+      name: "cv.png",
+      path:"C:/Users/younu/Documents/Git/jobbies/src/assets/images/cv.png"
+    },
+    coverLetter: "Perfect. I'm creating a similar but not identical sub component now for showing the cover letter text content. I want this to feature the same gradient effect on the bottom edge, but instead of being scrollable, I want this component to be exapndable and animated using Framer Motion. The collapsed state should be short (say h-30) showing the clipped text content by the gradient, and on hover should display a '▼' in the row. On click, it should expand downwards displaying the full height needed for the text. Perfect. I'm creating a similar but not identical sub component now for showing the cover letter text content. I want this to feature the same gradient effect on the bottom edge, but instead of being scrollable, I want this component to be exapndable and animated using Framer Motion. The collapsed state should be short (say h-30) showing the clipped text content by the gradient, and on hover should display a '▼' in the row. On click, it should expand downwards displaying the full height needed for the text.",
   },
   {
     id: "2",
     company: "Design Studio",
     position: "UI/UX Designer",
     status: "interview",
-    appliedDate: "2023-09-15",
+    appliedDate: "2025-02-15",
     salary: "$70,000",
     location: "San Francisco, CA",
     notes: "Interview scheduled for next week.",
