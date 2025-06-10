@@ -1,8 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 import Icon from "@mdi/react";
-import { mdiMapMarker, mdiCash } from "@mdi/js";
-import { Job } from "../types"; 
+import { mdiMapMarker, mdiCash, mdiCalendar, mdiCalendarClock } from "@mdi/js";
+import { Job } from "../types";
 
 interface JobListItemProps {
   job: Job;
@@ -11,7 +11,12 @@ interface JobListItemProps {
   onView?: (job: Job) => void;
 }
 
-const JobListItem: React.FC<JobListItemProps> = ({ job, onEdit, onDelete, onView }) => {
+const JobListItem: React.FC<JobListItemProps> = ({
+  job,
+  onEdit,
+  onDelete,
+  onView,
+}) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -22,7 +27,9 @@ const JobListItem: React.FC<JobListItemProps> = ({ job, onEdit, onDelete, onView
         boxShadow: "0 0px 12px rgba(255, 255, 255, 0.5)",
         cursor: "pointer",
       }}
-      onClick={() => {onView?.( job )}}
+      onClick={() => {
+        onView?.(job);
+      }}
       style={{ backgroundColor: "rgba(219, 255, 246, 1.0)" }}
       className="py-4 rounded-sm shadow-md hover:shadow-lg transition-shadow font-ivysoft"
     >
@@ -33,6 +40,21 @@ const JobListItem: React.FC<JobListItemProps> = ({ job, onEdit, onDelete, onView
         </div>
 
         <div className="flex items-center space-x-6 font-medium">
+          {/* Date */}
+          <div className="flex items-center space-x-2">
+            <Icon path={mdiCalendarClock} size={1} className="text-gray-600" />
+            <div>
+              {/* <p className="text-sm text-gray-600">Days Since App.</p> */}
+              <p className="text-sm text-black font-medium">
+                {Math.floor(
+                  (new Date().getTime() - new Date(job.appliedDate).getTime()) /
+                    (1000 * 60 * 60 * 24)
+                )}{" "}
+                days ago
+              </p>
+            </div>
+          </div>
+
           {/* Location */}
           {job.location && (
             <div className="flex items-center space-x-2">
@@ -48,11 +70,6 @@ const JobListItem: React.FC<JobListItemProps> = ({ job, onEdit, onDelete, onView
               <span className="text-sm text-gray-800">{job.salary}</span>
             </div>
           )}
-
-          {/* Date */}
-          <div className="text-sm text-gray-800">
-            Applied: {new Date(job.appliedDate).toLocaleDateString()}
-          </div>
         </div>
       </div>
 

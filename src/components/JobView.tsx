@@ -52,7 +52,7 @@ const JobView: React.FC<JobViewProps> = ({
             style={{ backgroundColor: "rgba(255, 255, 255, 1.0)" }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Fixed Header with Backdrop Blur */}
+            {/* Fixed Header */}
             <div className="sticky top-0 z-10 rounded-t-lg border-b border-gray-200 bg-white/10 backdrop-blur-md">
               <div className="flex items-center justify-between p-6">
                 <div className="flex items-center space-x-4">
@@ -78,24 +78,24 @@ const JobView: React.FC<JobViewProps> = ({
             </div>
 
             {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto p-6 no-scrollbar">
+            <div className="flex-1 overflow-y-auto p-6 no-scrollbar pb-20">
               {/* Key Information */}
               <div className="mb-6">{keyInformation(job)}</div>
 
-              {/* Top Portion */}
+              {/* Top Portion (CV and Job Description) */}
               <div className="flex justify-between items-start">
-                {/* CV Image */}
                 {cvImage(job)}
-
                 {jobDescription(job)}
               </div>
 
+              {/* Cover Letter */}
               {job.coverLetter && (
-                <div className="mt-6">
-                  {" "}
-                  {/* Adjust margin-top as needed for spacing */}
-                  {coverLetter(job)}
-                </div>
+                <div className="mt-6">{coverLetter(job)}</div>
+              )}
+
+              {/* Application Questions */}
+              {job.questions && (
+                <div>{applicationQuestions(job.questions)}</div>
               )}
             </div>
           </motion.div>
@@ -334,7 +334,7 @@ function coverLetter(job: Job) {
     // Styling like flex-1 or ml-6 should be handled by the parent if needed.
     <div>
       <div
-        className="flex items-center justify-between mb-4 cursor-pointer"
+        className="flex items-center justify-between mb-2 cursor-pointer"
         onClick={() => setIsExpanded(!isExpanded)}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
@@ -352,28 +352,23 @@ function coverLetter(job: Job) {
           ▼
         </motion.div>
       </div>
-      <div
-        className="relative" // `group` enables group-hover for child elements
-      >
+      <div className="relative">
         <motion.div
           className="overflow-hidden relative"
           initial={false} // Prevents animation on initial render
           animate={{ height: isExpanded ? "auto" : "5rem" }}
           transition={{ duration: 1.0, ease: [0.85, 0, 0.15, 1] }} // Smooth animation
         >
-          {/* Paragraph for the cover letter text.
-           */}
+          {/* Paragraph for the cover letter text */}
           <p
-            className={`text-gray-800 leading-relaxed text-sm ${
+            className={`text-gray-800 leading-relaxed text-sm text-justify ${
               !isExpanded ? "pb-10" : "pb-2"
             }`}
           >
             {textContent}
           </p>
 
-          {/* Fading gradient overlay:
-              Shown only when collapsed to fade out the bottom of the clipped text.
-          */}
+          {/* Fading gradient overlay */}
           {!isExpanded && (
             <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent pointer-events-none" />
           )}
