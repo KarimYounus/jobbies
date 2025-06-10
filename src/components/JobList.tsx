@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import JobListItem from "./JobListItem";
-import { Job } from "../types"; 
+import { Job, defaultItems } from "../types/job-types"; 
 import JobView from "./JobView";
 
 interface JobListProps {
@@ -9,44 +9,6 @@ interface JobListProps {
   items: any[];
   children?: React.ReactNode;
 }
-
-const defaultItems: Job[] = [
-  {
-    id: "1",
-    company: "Tech Corp",
-    position: "Software Engineer",
-    status: "applied",
-    appliedDate: "2025-06-01",
-    salary: "$80,000",
-    location: "New York, NY",
-    notes: "Initial application submitted.",
-    questions: [
-      {
-        question: "What is your experience with React?",
-        answer: "I have 3 years of experience working with React in various projects."
-      },
-      {
-        question: "How do you handle state management in large applications?",
-        answer: "I prefer using Redux for state management in large applications."
-      }
-    ],
-    cv: {
-      name: "cv.png",
-      path:"C:/Users/younu/Documents/Git/jobbies/src/assets/images/cv.png"
-    },
-    coverLetter: "Perfect. I'm creating a similar but not identical sub component now for showing the cover letter text content. I want this to feature the same gradient effect on the bottom edge, but instead of being scrollable, I want this component to be exapndable and animated using Framer Motion. The collapsed state should be short (say h-30) showing the clipped text content by the gradient, and on hover should display a '▼' in the row. On click, it should expand downwards displaying the full height needed for the text. Perfect. I'm creating a similar but not identical sub component now for showing the cover letter text content. I want this to feature the same gradient effect on the bottom edge, but instead of being scrollable, I want this component to be exapndable and animated using Framer Motion. The collapsed state should be short (say h-30) showing the clipped text content by the gradient, and on hover should display a '▼' in the row. On click, it should expand downwards displaying the full height needed for the text.",
-  },
-  {
-    id: "2",
-    company: "Design Studio",
-    position: "UI/UX Designer",
-    status: "interview",
-    appliedDate: "2025-02-15",
-    salary: "$70,000",
-    location: "San Francisco, CA",
-    notes: "Interview scheduled for next week.",
-  },
-];
 
 const JobList: React.FC<JobListProps> = ({ title, items, children }) => {
   const [isExpanded, setIsExpanded] = useState(false); // State to track if the list is expanded
@@ -67,6 +29,12 @@ const JobList: React.FC<JobListProps> = ({ title, items, children }) => {
     setIsJobViewOpen(false);
   }
 
+  // Placeholder function to handle job editing
+  const handleJobEdit = (job: Job) => {
+    console.log("Edit job:", job);
+    // Implement edit logic here
+  }
+
   // State to track content and header heights for animation
   const [contentHeight, setContentHeight] = useState(0);
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -85,7 +53,7 @@ const JobList: React.FC<JobListProps> = ({ title, items, children }) => {
 
   return (
     <motion.div
-      className="flex flex-col w-full text-white rounded-sm shadow-lg overflow-hidden"
+      className="flex flex-col w-full text-white rounded-xl shadow-lg overflow-hidden"
       animate={{
         height: isExpanded ? headerHeight + contentHeight : headerHeight,
       }}

@@ -1,8 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 import Icon from "@mdi/react";
-import { mdiMapMarker, mdiCash, mdiCalendar, mdiCalendarClock } from "@mdi/js";
-import { Job } from "../types";
+import { mdiMapMarker, mdiCash, mdiCalendarClock } from "@mdi/js";
+import { Job } from "../types/job-types";
 
 interface JobListItemProps {
   job: Job;
@@ -30,8 +30,8 @@ const JobListItem: React.FC<JobListItemProps> = ({
       onClick={() => {
         onView?.(job);
       }}
-      style={{ backgroundColor: "rgba(219, 255, 246, 1.0)" }}
-      className="py-4 rounded-sm shadow-md hover:shadow-lg transition-shadow font-ivysoft"
+      // style={{ backgroundColor: "rgba(219, 255, 246, 1.0)" }}
+      className="py-4 rounded-xl shadow-md hover:shadow-lg transition-shadow font-ivysoft bg-gray-50"
     >
       <div className="flex justify-between items-center px-6">
         <div className="flex flex-col gap-1 justify-center items-start text-xl font-semibold">

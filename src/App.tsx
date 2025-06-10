@@ -1,6 +1,8 @@
-import { useState } from "react";
+import AnimatedButton from "./components/AnimatedButton";
 import { motion } from "motion/react";
 import JobList from "./components/JobList";
+import Icon from '@mdi/react';
+import { mdiNotePlusOutline } from '@mdi/js';
 
 function App() {
   return (
@@ -26,14 +28,15 @@ function App() {
         </motion.h1> */}
         {/* Buttons */}
         <motion.div className="flex gap-4 pr-5">
-          {/* <motion.button className="bg-white border-amber-700 border-2 text-black px-4 py-2 rounded-xl hover:bg-blue-600 transition-colors">
-            New List
-          </motion.button> */}
-          <motion.button className="border-2 text-white px-4 py-2 rounded-sm transition-colors shadow-xl"
-            whileHover={{ scale: 1.05, boxShadow: "0 0px 4px rgba(255, 255, 255, 0.2)" }}
-            style={{ backgroundColor: 'rgba(53, 79, 82, 0.8)', borderColor: 'rgba(255, 255, 255, 0.2)' }}>
-            New Application
-          </motion.button>
+
+          <AnimatedButton
+            icon={mdiNotePlusOutline}
+            caption="Add Job"
+            className="p-2 mx-3 hover:bg-teal-200 rounded-lg transition-colors cursor-pointer"
+            iconClassName="text-gray-200 hover:text-gray-800"
+            onClick={() => console.log("Add Job Clicked")}
+          />
+
         </motion.div>
       </motion.div>
 
