@@ -12,6 +12,7 @@ import {
   mdiWeb,
   mdiApplicationEditOutline,
   mdiDeleteOutline,
+  mdiCodeJson,
 } from "@mdi/js";
 import { Job } from "../types/job-types";
 
@@ -71,7 +72,8 @@ const JobView: React.FC<JobViewProps> = ({
                 </div>
 
                 {/* Buttons */}
-                <div className="flex space-x-1 pl-40">
+                <div className="flex space-x-2">
+                  {/* Website Link Button */}
                   {job.link && (
                     <AnimatedButton
                       icon={mdiWeb}
@@ -83,6 +85,15 @@ const JobView: React.FC<JobViewProps> = ({
                       className="p-2 hover:bg-blue-100 rounded-full transition-colors cursor-pointer"
                     />
                   )}
+
+                  {/* Export to JSON Button */}
+                  <AnimatedButton
+                    icon={mdiCodeJson}
+                    onClick={() => console.log("Export to JSON clicked")}
+                    caption="Copy to JSON"
+                    captionPosition="left"
+                    className="p-2 hover:bg-orange-100 rounded-full transition-colors cursor-pointer"
+                  />
 
                   {/* Edit Button */}
                   <AnimatedButton
@@ -111,7 +122,7 @@ const JobView: React.FC<JobViewProps> = ({
             </div>
 
             {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto p-6 no-scrollbar  pb-20">
+            <div className="flex-1 overflow-y-auto p-6 no-scrollbar">
               {/* Key Information */}
               <div className="mb-6">{keyInformation(job)}</div>
 
@@ -178,7 +189,10 @@ function applicationQuestions(questions: Job["questions"]) {
       </h3>
       <div className="relative">
         {/* Horizontal scroll container for question cards */}
-        <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar overflow-y-visible">
+        <div
+          className="flex gap-4 overflow-x-auto pb-4 no-scrollbar pt-2 px-1"
+          style={{ overflowY: "visible" }}
+        >
           {questions.map((qa, index) => (
             <motion.div
               key={index}
@@ -186,8 +200,9 @@ function applicationQuestions(questions: Job["questions"]) {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.1 }}
               className="flex-shrink-0 w-80 bg-white bg-opacity-70 p-4 rounded-lg border border-gray-200 cursor-pointer shadow-lg hover:shadow-2xl hover:border-gray-300 transition-all duration-200"
-              onClick={() => openModal(index)} // Set this question as selected on click
-              whileHover={{ y: -3 }} // Subtle lift effect on hover
+              onClick={() => openModal(index)}
+              whileHover={{ y: -3 }}
+              style={{ transformOrigin: "center bottom" }} // Ensures transform doesn't get clipped
             >
               {/* Question Preview */}
               <div className="mb-3">
@@ -295,7 +310,7 @@ function keyInformation(job: Job) {
 
         <div>
           {/* <p className="text-sm text-gray-600">Days Since App.</p> */}
-          <p className="text-sm text-black font-medium">
+          <p className=" text-black font-medium">
             {Math.floor(
               (new Date().getTime() - new Date(job.appliedDate).getTime()) /
                 (1000 * 60 * 60 * 24)
@@ -393,12 +408,13 @@ function cvImage(job: Job) {
               onClick={(e) => e.stopPropagation()}
             >
               {/* Close button */}
-              <button
+              <AnimatedButton
+                icon={mdiClose}
                 onClick={() => setCVView(false)}
-                className="absolute top-4 right-4 z-10 p-3 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full shadow-lg transition-all"
-              >
-                <Icon path={mdiClose} size={1} className="text-gray-700" />
-              </button>
+                caption="Close"
+                className="absolute top-4 left-[70vh] p-2 bg-white bg-opacity-70 rounded-full shadow-lg hover:bg-opacity-90 transition-colors cursor-pointer"
+                iconClassName="text-gray-800"
+              />
 
               {/* Expanded CV Image */}
               <motion.img

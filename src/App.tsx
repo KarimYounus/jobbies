@@ -15,6 +15,8 @@ function App() {
         transition={{ duration: 0.5, ease: [0.85, 0, 0.15, 1] }}
       >
         {/* Logo */}
+        <div className="w-10"></div>
+        
         <motion.img
           src="src/assets/images/logo-trans.png"
           alt="Logo"
@@ -23,6 +25,8 @@ function App() {
           animate={{ scale: 1 }}
           transition={{ duration: 0.3, type: "spring", stiffness: 300 }}
         />
+
+
         {/* <motion.h1 className="text-6xl font-ivysoft font-bold tracking-wide my-2" style={{ color: '#2F3E46' }}>
           Jobbies
         </motion.h1> */}

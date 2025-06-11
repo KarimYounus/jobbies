@@ -54,6 +54,7 @@ const JobList: React.FC<JobListProps> = ({ title, items, children }) => {
   return (
     <motion.div
       className="flex flex-col w-full text-white rounded-xl shadow-lg overflow-hidden"
+      initial={{ height: headerHeight }}
       animate={{
         height: isExpanded ? headerHeight + contentHeight : headerHeight,
       }}
