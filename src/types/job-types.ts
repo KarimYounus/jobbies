@@ -6,6 +6,7 @@ export interface Job {
   id: string;
   company: string;
   position: string;
+  description?: string; // optional field to store job description
   status: StatusItem;
   appliedDate: string;
   salary?: string;
@@ -36,7 +37,8 @@ export const defaultItems: Job[] = [
     id: "1",
     company: "Tech Corp",
     position: "Software Engineer",
-    status: getStatusByText("Applied") || { text: "Applied", color: "bg-blue-500" },
+    description: "We are looking for a skilled software engineer to join our team. The ideal candidate will have experience in full-stack development, strong problem-solving skills, and the ability to work in a fast-paced environment.",
+    status: { text: "Completed Test", color: "#4A90E2" },
     appliedDate: "2025-06-01",
     salary: "$80,000",
     location: "New York, NY",
