@@ -1,5 +1,9 @@
 import React from "react";
 import AnimatedButton from "./AnimatedButton";
+import ApplicationQuestions from "./JobView/ApplicationQuestions";
+import CvImage from "./JobView/CVImage";
+import CoverLetter from "./JobView/CoverLetter";
+import ApplicationStatus from "./JobView/ApplicationStatus";
 import { motion, AnimatePresence } from "framer-motion";
 import Icon from "@mdi/react";
 import {
@@ -133,19 +137,20 @@ const JobView: React.FC<JobViewProps> = ({
 
               {/* Top Portion (CV and Job Description) */}
               <div className="flex justify-between items-start pb-4 border-t border-gray-200 pt-6">
-                {CvImage(job)}
-                {JobDescription(job.description)}
+                {CvImage(job.cv)}
+                {JobDescription(job.description || "No job description available.")}
               </div>
 
               {/* Notes Section */}
               <div className="mt-6">
-                {Notes(job.notes || "No notes available.")}
+                {job.notes && 
+                  Notes(job.notes || "No notes yet.")}
               </div>
 
               {/* Cover Letter */}
               {job.coverLetter && (
                 <div className="py-3 border-t border-gray-200 ">
-                  {CoverLetter(job)}
+                  {CoverLetter(job.coverLetter || "No cover letter provided.")}
                 </div>
               )}
 
@@ -164,40 +169,6 @@ const JobView: React.FC<JobViewProps> = ({
 };
 
 export default JobView;
-
-// Function to render the application status component
-function ApplicationStatus(statusItem: Job["status"]) {
-  // Get the status object based on the job's status text
-
-  // Fallback for statuses not in the default list, like 'Awaiting Response'
-  const text = statusItem.text 
-  const color = statusItem.color
-
-  return (
-    <div className="relative flex justify-center items-center my-8 h-10">
-      {/* Elliptical Gradient Background */}
-      <motion.div
-        className="absolute inset-0 blur-2xl"
-        style={{
-          backgroundImage: `radial-gradient(ellipse 80% 40% at 50% 50%, ${color}, transparent 100%)`,
-        }}
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-      ></motion.div>
-
-      {/* Status Text */}
-      <motion.p 
-        className="relative z-10 text-xl font-semibold text-black tracking-wider"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-      >
-        {text}
-      </motion.p>
-    </div>
-  );
-}
 
 // Function to render key information about the job
 function KeyInformation(job: Job) {
@@ -259,102 +230,16 @@ function KeyInformation(job: Job) {
   );
 }
 
-// Function to render CV image with modal view
-function CvImage(job: Job) {
-  const [cvView, setCVView] = React.useState(false);
-  return (
-    <>
-      {/* CV Image */}
-      <div className="relative z-5">
-        <motion.img
-          src="src/assets/images/cv.png"
-          alt="CV Preview"
-          className="h-full max-h-[39vh] rounded-md object-cover shadow-2xl border border-gray-200 cursor-pointer hover:shadow-3xl transition-shadow"
-          initial={{ opacity: 0, y: -400 }}
-          animate={{ opacity: 1, y: 0, x: 0 }}
-          transition={{ duration: 1.0, ease: [0.85, 0, 0.15, 1] }}
-          onClick={() => setCVView(true)}
-          whileHover={{ scale: 1.1, x: 30, y: 20 }}
-          whileTap={{ scale: 0.98 }}
-        />
 
-        {/* Overlay hint */}
-        <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-10 rounded-md transition-all duration-300 flex items-center justify-center opacity-0 hover:opacity-100 pointer-events-none">
-          <p className="text-white font-medium bg-black bg-opacity-50 px-3 py-1 rounded-full text-sm pointer-events-none">
-            Click to expand
-          </p>
-        </div>
-      </div>
 
-      {/* CV Expanded View Modal */}
-      <AnimatePresence>
-        {cvView && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-[60] flex items-center justify-center backdrop-blur-lg"
-            style={{ backgroundColor: "rgba(0, 0, 0, 0.8)" }}
-            onClick={() => setCVView(false)}
-          >
-            <motion.div
-              initial={{ scale: 1, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.5, opacity: 0 }}
-              transition={{ duration: 0.4, ease: [0.85, 0, 0.15, 1] }}
-              className="relative max-w-[70vw] max-h-[80vh] flex items-center justify-center"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Close button */}
-              <AnimatedButton
-                icon={mdiClose}
-                onClick={() => setCVView(false)}
-                caption="Close"
-                className="absolute top-4 left-[70vh] p-2 bg-white bg-opacity-70 rounded-full shadow-lg hover:bg-opacity-90 transition-colors cursor-pointer"
-                iconClassName="text-gray-800"
-              />
-
-              {/* Expanded CV Image */}
-              <motion.img
-                src="src/assets/images/cv.png"
-                alt="CV Full View"
-                className="max-w-full max-h-[95vh] object-contain rounded-lg shadow-2xl"
-                layoutId="cv-image" // This creates a smooth transition between states
-              />
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
-  );
-}
-
-function JobDescription(description: Job["description"]) {
+function JobDescription(description: string) {
   return (
     <div className="flex-1 ml-6">
       <h3 className="text-lg font-semibold text-black mb-2">Job Description</h3>
       <div className="relative">
         <div className="max-h-95 w-full overflow-y-auto no-scrollbar scrollbar-track-white-100 text-justify">
           <p className="text-gray-800 leading-relaxed text-sm pb-20">
-            This is a detailed description of the job position, including
-            responsibilities, requirements, and any other relevant information.
-            It should provide a clear understanding of what the job entails and
-            what is expected from the candidate. It may be vert long, so it is
-            important to keep it concise yet informative, highlighting the key
-            aspects of the role to attract suitable applicants. This is a
-            detailed description of the job position, including
-            responsibilities, requirements, and any other relevant information.
-            It should provide a clear understanding of what the job entails and
-            what is expected from the candidate. It may be vert long, so it is
-            important to keep it concise yet informative, highlighting the key
-            aspects of the role to attract suitable applicants. This is a
-            detailed description of the job position, including
-            responsibilities, requirements, and any other relevant information.
-            It should provide a clear understanding of what the job entails and
-            what is expected from the candidate. It may be vert long, so it is
-            important to keep it concise yet informative, highlighting the key
-            aspects of the role to attract suitable applicants.
+            {description || "No job description available."}
           </p>
         </div>
         {/* Fading gradient overlay */}
@@ -381,202 +266,3 @@ function Notes(noteText: string) {
   );
 }
 
-function CoverLetter(job: Job) {
-  const [isExpanded, setIsExpanded] = React.useState(false);
-  // Ensure job.coverLetter is available; fallback if necessary, though the parent component checks this.
-  const textContent = job.coverLetter || "No cover letter content available.";
-
-  return (
-    // The main container for the cover letter section.
-    // Styling like flex-1 or ml-6 should be handled by the parent if needed.
-    <div>
-      <div
-        className="flex items-center justify-between mb-2 cursor-pointer"
-        onClick={() => setIsExpanded(!isExpanded)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            setIsExpanded(!isExpanded);
-          }
-        }}
-      >
-        <h3 className="text-lg font-semibold text-black">Cover Letter</h3>
-        <motion.div
-          animate={{ rotate: isExpanded ? 180 : 0 }}
-          transition={{ duration: 0.2 }}
-          className="text-black mr-4"
-        >
-          ▼
-        </motion.div>
-      </div>
-      <div className="relative">
-        <motion.div
-          className="overflow-hidden relative"
-          initial={false} // Prevents animation on initial render
-          animate={{ height: isExpanded ? "auto" : "5rem" }}
-          transition={{ duration: 1.0, ease: [0.85, 0, 0.15, 1] }} // Smooth animation
-        >
-          {/* Paragraph for the cover letter text */}
-          <p
-            className={`text-gray-800 leading-relaxed text-sm text-justify pb-2`}
-          >
-            {textContent}
-          </p>
-
-          {/* Fading gradient overlay */}
-          <motion.div
-            className={`absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent pointer-events-none`}
-            initial={{ opacity: 1.0 }}
-            animate={{ opacity: isExpanded ? 0 : 1.0 }}
-            transition={{ duration: 1.0 }}
-          />
-        </motion.div>
-      </div>
-    </div>
-  );
-}
-
-// Function to render application questions
-function ApplicationQuestions(questions: Job["questions"]) {
-  // State to keep track of the index of the selected question for modal view.
-  // `null` means no modal is open.
-  const [selectedQuestionIndex, setSelectedQuestionIndex] = React.useState<
-    number | null
-  >(null);
-
-  // Handler to open the modal for a specific question.
-  const openModal = (index: number) => {
-    setSelectedQuestionIndex(index);
-  };
-
-  // Handler to close the currently open modal.
-  const closeModal = () => {
-    setSelectedQuestionIndex(null);
-  };
-
-  // Return early if there are no questions.
-  if (!questions || questions.length === 0) {
-    return <p className="text-gray-600">No application questions available.</p>;
-  }
-
-  // Get the currently selected question object, if any.
-  const currentQuestion =
-    selectedQuestionIndex !== null ? questions[selectedQuestionIndex] : null;
-
-  return (
-    <div>
-      <h3 className="text-lg font-semibold text-black mb-4">
-        Application Questions
-      </h3>
-      <div className="relative">
-        {/* Horizontal scroll container for question cards */}
-        <div
-          className="flex gap-4 overflow-x-auto pb-4 no-scrollbar pt-2 px-1"
-          style={{ overflowY: "visible" }}
-        >
-          {questions.map((qa, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className="flex-shrink-0 w-80 bg-white bg-opacity-70 p-4 rounded-lg border border-gray-200 cursor-pointer shadow-lg hover:shadow-2xl hover:border-gray-300 transition-all duration-200"
-              onClick={() => openModal(index)}
-              whileHover={{ y: -3 }}
-              style={{ transformOrigin: "center bottom" }} // Ensures transform doesn't get clipped
-            >
-              {/* Question Preview */}
-              <div className="mb-3">
-                <h4 className="text-sm font-semibold text-gray-700 mb-2">
-                  Question {index + 1}
-                </h4>
-                <p className="text-sm text-gray-800 font-medium leading-relaxed line-clamp-3">
-                  {" "}
-                  {/* Truncate long questions in card */}
-                  {qa.question}
-                </p>
-              </div>
-              {/* Answer Preview */}
-              <div>
-                <h5 className="text-xs font-semibold text-gray-600 mb-1 uppercase tracking-wide">
-                  Answer
-                </h5>
-                <p className="text-sm text-gray-700 leading-relaxed line-clamp-4 text-justify">
-                  {" "}
-                  {/* Truncate long answers in card */}
-                  {qa.answer}
-                </p>
-                {/* <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent pointer-events-none" /> */}
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Gradient */}
-        {questions.length > 2 && (
-          <div className="absolute right-0 top-0 bottom-4 w-8 bg-gradient-to-l from-white via-white/80 to-transparent pointer-events-none" />
-        )}
-      </div>
-
-      {/* Modal for displaying the full question and answer */}
-      <AnimatePresence>
-        {currentQuestion && selectedQuestionIndex !== null && (
-          <motion.div
-            // Backdrop styling: fixed position, covers screen, backdrop blur.
-            // z-index is set high to appear above other content.
-            className="fixed inset-0 z-[70] flex items-center justify-center backdrop-blur-md"
-            style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }} // Semi-transparent black background
-            onClick={closeModal} // Close modal if backdrop is clicked
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            {/* Modal content container: stops click propagation to backdrop. */}
-            <motion.div
-              className="bg-white rounded-xl shadow-2xl p-6 pt-4 w-full max-w-xl mx-4 flex flex-col" // Added flex-col
-              onClick={(e) => e.stopPropagation()} // Prevents modal from closing when its content is clicked
-              initial={{ scale: 0.9, y: 20, opacity: 0 }}
-              animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.9, y: 20, opacity: 0 }}
-              transition={{ duration: 0.2, ease: "circOut" }}
-            >
-              {/* Modal Header with Close Button */}
-              <div className="flex justify-between items-center mb-3">
-                <h4 className="text-xl font-semibold text-black">
-                  Question {selectedQuestionIndex + 1}
-                </h4>
-                <button
-                  onClick={closeModal}
-                  className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-500 hover:text-gray-700"
-                  aria-label="Close question details"
-                >
-                  <Icon path={mdiClose} size={1.1} />
-                </button>
-              </div>
-
-              {/* Scrollable Content Area for Question and Answer */}
-              <div className="overflow-y-auto max-h-[70vh] px-2 no-scrollbar">
-                {/* Full Question */}
-                <div className="mb-5">
-                  <p className="font-bold text-gray-800 leading-relaxed whitespace-pre-wrap">
-                    {currentQuestion.question}
-                  </p>
-                </div>
-                {/* Full Answer */}
-                <div>
-                  <h5 className="text-md font-semibold text-black mb-2 border-t border-gray-200 pt-3">
-                    Answer
-                  </h5>
-                  <p className="text-gray-700 leading-relaxed text-justify">
-                    {currentQuestion.answer}
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
