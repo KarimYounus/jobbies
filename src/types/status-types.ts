@@ -3,26 +3,26 @@
 export interface StatusItem {
   text: string;
   color: string;
+  round?: number; // Optional field indicating the round of the status, if applicable
 }
 
 // Default status items for initial state
-export const defaultStatusItems = new Set<StatusItem>([
-  { text: "Applied", color: "#F05D23" },
-  { text: "Completed Test", color: "#4A90E2" },
-  { text: "Interview", color: "bg-yellow-500" },
-  { text: "Rejected", color: "bg-red-500" },
-  { text: "Offer", color: "bg-green-500" },
-  { text: "Archived", color: "bg-gray-500" }
-]);
+export const defaultStatusItems: StatusItem[] = [
+  { text: "Applied", color: "#184e77" },
+  { text: "Assessment Stage", color: "#168aad" },
+  { text: "Interview Stage", color: "#76c893" },
+  { text: "Offer", color: "#abff4f" },
+  { text: "Rejected", color: "#ef233c" },
+];
 
 // Helper function to get status item by text (identifier)
 export const getStatusByText = (text: string): StatusItem | undefined => {
-  return Array.from(defaultStatusItems).find(item => item.text === text);
+  return Array.from(defaultStatusItems).find((item) => item.text === text);
 };
 
 // Helper function to check if a status exists
 export const statusExists = (text: string): boolean => {
-  return Array.from(defaultStatusItems).some(item => item.text === text);
+  return Array.from(defaultStatusItems).some((item) => item.text === text);
 };
 
 // Available colors (in hex) for status items

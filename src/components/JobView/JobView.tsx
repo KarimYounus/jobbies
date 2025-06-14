@@ -1,9 +1,9 @@
 import React from "react";
-import AnimatedButton from "./AnimatedButton";
-import ApplicationQuestions from "./JobView/ApplicationQuestions";
-import CvImage from "./JobView/CVImage";
-import CoverLetter from "./JobView/CoverLetter";
-import ApplicationStatus from "./JobView/ApplicationStatus";
+import AnimatedButton from "../AnimatedButton";
+import ApplicationQuestions from "./ApplicationQuestions";
+import CvImage from "./CVImage";
+import CoverLetter from "./CoverLetter";
+import ApplicationStatus from "./ApplicationStatus";
 import { motion, AnimatePresence } from "framer-motion";
 import Icon from "@mdi/react";
 import {
@@ -18,7 +18,7 @@ import {
   mdiDeleteOutline,
   mdiCodeJson,
 } from "@mdi/js";
-import { Job } from "../types/job-types";
+import { Job } from "../../types/job-types";
 
 interface JobViewProps {
   job: Job | null;
@@ -131,20 +131,19 @@ const JobView: React.FC<JobViewProps> = ({
               <div className="mb-6">{KeyInformation(job)}</div>
 
               {/* Application Status */}
-              <div className="mb-6">
-                {ApplicationStatus(job.status)}
-              </div>
+              <div className="mb-6">{ApplicationStatus(job.status)}</div>
 
               {/* Top Portion (CV and Job Description) */}
               <div className="flex justify-between items-start pb-4 border-t border-gray-200 pt-6">
                 {CvImage(job.cv)}
-                {JobDescription(job.description || "No job description available.")}
+                {JobDescription(
+                  job.description || "No job description available."
+                )}
               </div>
 
               {/* Notes Section */}
               <div className="mt-6">
-                {job.notes && 
-                  Notes(job.notes || "No notes yet.")}
+                {job.notes && Notes(job.notes || "No notes yet.")}
               </div>
 
               {/* Cover Letter */}
@@ -230,8 +229,6 @@ function KeyInformation(job: Job) {
   );
 }
 
-
-
 function JobDescription(description: string) {
   return (
     <div className="flex-1 ml-6">
@@ -265,4 +262,3 @@ function Notes(noteText: string) {
     </div>
   );
 }
-

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import JobListItem from "./JobListItem";
 import { Job, defaultItems } from "../types/job-types"; 
-import JobView from "./JobView";
+import JobView from "./JobView/JobView";
 
 interface JobListProps {
   title: string;

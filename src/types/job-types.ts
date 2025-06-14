@@ -1,4 +1,4 @@
-import { getStatusByText, StatusItem } from "./status-types";
+import { getStatusByText, StatusItem, defaultStatusItems } from "./status-types";
 
 // Job type definition
 // This interface describes the structure of a job object in the application.
@@ -38,7 +38,7 @@ export const defaultItems: Job[] = [
     company: "Tech Corp",
     position: "Software Engineer",
     description: `This is a detailed description of the job position, including responsibilities, requirements, and any other relevant information. It should provide a clear understanding of what the job entails and what is expected from the candidate. It may be vert long, so it is important to keep it concise yet informative, highlighting the key aspects of the role to attract suitable applicants. This is a detailed description of the job position, including responsibilities, requirements, and any other relevant information. It should provide a clear understanding of what the job entails and what is expected from the candidate. It may be vert long, so it is important to keep it concise yet informative, highlighting the key aspects of the role to attract suitable applicants. This is a detailed description of the job position, including responsibilities, requirements, and any other relevant information. It should provide a clear understanding of what the job entails and what is expected from the candidate. It may be vert long, so it is important to keep it concise yet informative, highlighting the key aspects of the role to attract suitable applicants.`,
-    status: { text: "Completed Test", color: "#4A90E2" },
+    status: defaultStatusItems[0],
     appliedDate: "2025-06-01",
     salary: "$80,000",
     location: "New York, NY",
