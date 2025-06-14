@@ -4,20 +4,26 @@ import AnimatedButton from "../AnimatedButton";
 import { mdiClose, mdiApplicationEditOutline } from "@mdi/js";
 import React, { useEffect } from "react";
 
+interface ApplicationStatusProps {
+  statusItem: StatusItem; // Current status item to display
+  onChangeStatus?: (newStatus: StatusItem) => void; // Callback for status change
+}
+
 // Function to render the application status component
-function ApplicationStatus(statusItem: StatusItem) {
+function ApplicationStatus({
+  statusItem,
+  onChangeStatus,
+}: ApplicationStatusProps) {
   const [isHovered, setIsHovered] = React.useState(false);
   const [showMargin, setShowMargin] = React.useState(false);
 
   // Exclude current status from the list of other statuses
   const otherStatuses = defaultStatusItems.filter((s) => s.text !== statusItem.text);
 
-  // When hover starts, show margin immediately
   useEffect(() => {
     if (isHovered) setShowMargin(true);
-    // When hover ends, delay margin removal until after exit animation
     else if (showMargin) {
-      const timeout = setTimeout(() => setShowMargin(false), 300); // match exit duration
+      const timeout = setTimeout(() => setShowMargin(false), 300);
       return () => clearTimeout(timeout);
     }
   }, [isHovered, showMargin]);
@@ -28,14 +34,15 @@ function ApplicationStatus(statusItem: StatusItem) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Current status */}
+      {/* Animate current status out/in on change */}
       <motion.div
+        key={statusItem.text}
         layout
         transition={{ type: "spring", stiffness: 400, damping: 30 }}
         className="z-10 pr-4"
         style={{
           marginRight: showMargin ? 16 : 0,
-          transition: "margin-right 0.3s cubic-bezier(0.85,0,0.15,1)",
+          transition: "margin-right 0.5s cubic-bezier(.19,.95,.74,1.01)",
           borderRight: showMargin ? `2px solid ${statusItem.color}` : "none",
         }}
       >
@@ -57,7 +64,15 @@ function ApplicationStatus(statusItem: StatusItem) {
             transition={{ duration: 0.3 }}
           >
             {otherStatuses.map((s) => (
-              <StatusDisplay key={s.text} text={s.text} color={s.color} />
+              <div
+                key={s.text}
+                onClick={() => {
+                  if (onChangeStatus) onChangeStatus(s); // Call the callback with the new status
+                }}
+                style={{ cursor: "pointer" }}
+              >
+                <StatusDisplay text={s.text} color={s.color} />
+              </div>
             ))}
           </motion.div>
         )}

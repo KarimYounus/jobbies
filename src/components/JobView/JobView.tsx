@@ -19,6 +19,7 @@ import {
   mdiCodeJson,
 } from "@mdi/js";
 import { Job } from "../../types/job-types";
+import { StatusItem } from "../../types/status-types";
 
 interface JobViewProps {
   job: Job | null;
@@ -36,6 +37,12 @@ const JobView: React.FC<JobViewProps> = ({
   onDelete,
 }) => {
   if (!job) return null;
+
+  const [currentStatus, setCurrentStatus] = React.useState(job.status);
+
+  const handleStatusChange = (newStatus: StatusItem) => {
+    setCurrentStatus(newStatus);
+  }
 
   return (
     <AnimatePresence>
@@ -131,7 +138,9 @@ const JobView: React.FC<JobViewProps> = ({
               <div className="mb-6">{KeyInformation(job)}</div>
 
               {/* Application Status */}
-              <div className="mb-6">{ApplicationStatus(job.status)}</div>
+              <div className="mb-6">
+                <ApplicationStatus statusItem={currentStatus} onChangeStatus={handleStatusChange}/>
+              </div>
 
               {/* Top Portion (CV and Job Description) */}
               <div className="flex justify-between items-start pb-4 border-t border-gray-200 pt-6">
