@@ -58,7 +58,45 @@ export const defaultItems: JobApplication[] = [
       name: "cv.png",
       path:"C:/Users/younu/Documents/Git/jobbies/src/assets/images/cv.png"
     },
-    coverLetter: "Perfect. I'm creating a similar but not identical sub component now for showing the cover letter text content. I want this to feature the same gradient effect on the bottom edge, but instead of being scrollable, I want this component to be exapndable and animated using Framer Motion. The collapsed state should be short (say h-30) showing the clipped text content by the gradient, and on hover should display a '▼' in the row. On click, it should expand downwards displaying the full height needed for the text. Perfect. I'm creating a similar but not identical sub component now for showing the cover letter text content. I want this to feature the same gradient effect on the bottom edge, but instead of being scrollable, I want this component to be exapndable and animated using Framer Motion. The collapsed state should be short (say h-30) showing the clipped text content by the gradient, and on hover should display a '▼' in the row. On click, it should expand downwards displaying the full height needed for the text.",
+    coverLetter: `Dear Sir/Madam,
+I am writing to express my keen interest in contributing to ClearSky Medical's mission of advancing healthcare
+through machine learning. As a final-year MEng Software Engineering student at Heriot-Watt University, on
+track for a first-class degree, I bring a strong foundation in software engineering with specialised experience in
+machine learning. My technical expertise, combined with a passion for tackling meaningful challenges in
+healthcare, positions me as a versatile candidate capable of contributing across a variety of roles at ClearSky
+Medical.
+During my thesis research under your CSO, Dr. Michael Lones, I demonstrated my capabilities in machine
+learning and signal processing through the development of exoplanet detection systems. I built end-to-end ML
+pipelines that achieved 99.8% accuracy in identifying subtle exoplanet transit signatures within noisy timeseries
+data, matching the performance of current state-of-the-art detection methods. While my experience has
+been in astronomical applications, the fundamental skills I developed - building pipelines, implementing
+sophisticated ML architectures, and solving signal processing challenges - provide a strong foundation for
+working with other types of data. I further expanded this research by developing an innovative denoising
+approach using conditional GANs, which offered a potential pathway to surpass current detection methods by
+training on synthetic noisy-clean data pairs. This work showcased not only my technical abilities in
+implementing effective ML systems, but also my capacity to explore novel solutions to complex signal
+processing challenges.
+Beyond machine learning, I have developed strong software engineering practices through both academic
+projects and industry experience. During my placement at 21 Exclusive I obtained valuable industry experience,
+managing all aspects of developing an e-commerce website from concept to deployment. Working directly with
+stakeholders, I learned to translate business requirements into technical solutions, manage project timelines,
+and deliver production-quality code that met client expectations. While the domain was different, this
+experience provided me with crucial insights into professional software development practices and project
+management in an industry setting. This, combined with my consistent academic performance (27/32 courses
+at A-grade), shows I have a comprehensive set of software engineering expertise that complements my
+machine learning skills. This technical versatility would enable me to contribute effectively across ClearSky
+Medical's technology stack, from ML systems to backend services and development tools.
+My recent industry placement, while successful, reinforced my desire to work on innovative projects that create
+meaningful impact. While developing e-commerce solutions demonstrated my technical capabilities, I found
+myself drawn to challenges that push technological boundaries and directly benefit human lives. ClearSky
+Medical represents an opportunity to combine my passion for machine learning with the meaningful goal of
+advancing healthcare. The prospect of applying my skills to novel, challenging problems that could genuinely
+improve patient outcomes is the kind of work I am eager to pursue.
+Thank you for considering my application. I would welcome the opportunity to discuss how my skills and
+experiences can support ClearSky Medical’s mission. If there is any additional information I can provide or any
+steps I can take to move forward in the process, please let me know.
+Sincerely,
+Karim Younus`,
   },
   {
     id: "2",
