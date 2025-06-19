@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import JobListItem from "./JobListItem";
-import { Job, defaultItems } from "../types/job-types"; 
-import JobView from "./JobView/JobView";
+import { JobApplication, defaultItems } from "../types/job-application-types"; 
+import ApplicationWindow from "./ApplicationWindow/ApplicationWindow";
 
 interface JobListProps {
   title: string;
@@ -14,11 +14,11 @@ const JobList: React.FC<JobListProps> = ({ title, items, children }) => {
   const [isExpanded, setIsExpanded] = useState(false); // State to track if the list is expanded
 
   // State to manage selected job and job view modal
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [selectedJob, setSelectedJob] = useState<JobApplication | null>(null);
   const [isJobViewOpen, setIsJobViewOpen] = useState(false);
 
   // Function to handle job selection for viewing details
-  const handleJobView = (job: Job) => {
+  const handleJobView = (job: JobApplication) => {
     setSelectedJob(job);
     setIsJobViewOpen(true);
   }
@@ -30,7 +30,7 @@ const JobList: React.FC<JobListProps> = ({ title, items, children }) => {
   }
 
   // Placeholder function to handle job editing
-  const handleJobEdit = (job: Job) => {
+  const handleJobEdit = (job: JobApplication) => {
     console.log("Edit job:", job);
     // Implement edit logic here
   }
@@ -112,7 +112,7 @@ const JobList: React.FC<JobListProps> = ({ title, items, children }) => {
         </div>
       </motion.div>
 
-      <JobView
+      <ApplicationWindow
         job={selectedJob}
         isOpen={isJobViewOpen}
         onClose={handleCloseJobView}

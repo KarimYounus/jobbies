@@ -1,5 +1,4 @@
 import React from "react";
-import AnimatedButton from "../AnimatedButton";
 import Header from "./Header";
 import ApplicationQuestions from "./ApplicationQuestions";
 import CvImage from "./CVImage";
@@ -8,23 +7,16 @@ import ApplicationStatus from "./ApplicationStatus";
 import { motion, AnimatePresence } from "framer-motion";
 import Icon from "@mdi/react";
 import {
-  mdiClose,
   mdiMapMarker,
   mdiCash,
   mdiCalendar,
-  mdiOfficeBuilding,
   mdiCalendarClock,
-  mdiWeb,
-  mdiApplicationEditOutline,
-  mdiDeleteOutline,
-  mdiCodeJson,
 } from "@mdi/js";
-import { Job } from "../../types/job-types";
+import { JobApplication } from "../../types/job-application-types";
 import { StatusItem } from "../../types/status-types";
-import { s } from "motion/react-client";
 
-interface JobViewProps {
-  job: Job | null;
+interface ApplicationWindowProps {
+  job: JobApplication | null;
   isOpen: boolean;
   onClose: () => void;
   onDelete?: (jobId: string) => void;
@@ -40,7 +32,7 @@ export const EditModeContext = React.createContext<EditModeContextType>({
   setIsEditing: () => {},
 });
 
-const JobView: React.FC<JobViewProps> = ({
+const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
   job,
   isOpen,
   onClose,
@@ -139,11 +131,11 @@ const JobView: React.FC<JobViewProps> = ({
   );
 };
 
-export default JobView;
+export default ApplicationWindow;
        
 
 // Function to render key information about the job
-function KeyInformation(job: Job) {
+function KeyInformation(job: JobApplication) {
   return (
     <div className="flex items-center justify-between space-x-6 mx-3">
       {/* Days Ago */}

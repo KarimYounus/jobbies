@@ -2,7 +2,7 @@ import { getStatusByText, StatusItem, defaultStatusItems } from "./status-types"
 
 // Job type definition
 // This interface describes the structure of a job object in the application.
-export interface Job {
+export interface JobApplication {
   id: string;
   company: string;
   position: string;
@@ -32,7 +32,7 @@ export interface ApplicationQuestion {
 }
 
 // Default job items for initial state
-export const defaultItems: Job[] = [
+export const defaultItems: JobApplication[] = [
   {
     id: "1",
     company: "Tech Corp",

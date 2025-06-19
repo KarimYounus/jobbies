@@ -2,13 +2,13 @@ import React from "react";
 import { motion } from "framer-motion";
 import Icon from "@mdi/react";
 import { mdiMapMarker, mdiCash, mdiCalendarClock } from "@mdi/js";
-import { Job } from "../types/job-types";
+import { JobApplication } from "../types/job-application-types";
 
 interface JobListItemProps {
-  job: Job;
-  onEdit?: (job: Job) => void;
+  job: JobApplication;
+  onEdit?: (job: JobApplication) => void;
   onDelete?: (jobId: string) => void;
-  onView?: (job: Job) => void;
+  onView?: (job: JobApplication) => void;
 }
 
 const JobListItem: React.FC<JobListItemProps> = ({

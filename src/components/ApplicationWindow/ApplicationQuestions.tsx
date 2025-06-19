@@ -2,7 +2,7 @@ import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { mdiClose } from "@mdi/js";
 import { Icon } from "@mdi/react";
-import { ApplicationQuestion } from "../../types/job-types";
+import { ApplicationQuestion } from "../../types/job-application-types";
 
 // Function to render application questions
 function ApplicationQuestions(questions: ApplicationQuestion[]) {
