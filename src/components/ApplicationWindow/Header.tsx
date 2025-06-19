@@ -8,6 +8,7 @@ import {
   mdiDeleteOutline,
   mdiClose,
   mdiContentSave,
+  mdiFileCancel
 } from "@mdi/js";
 import AnimatedButton from "../AnimatedButton";
 import { ApplicationWindowContext } from "./ApplicationWindow";
@@ -16,15 +17,17 @@ import { JobApplication } from "../../types/job-application-types";
 interface HeaderProps {
   job: JobApplication;
   onClose: () => void;
-  onDelete: (jobId: string) => void;
+  onDelete: () => void;
   onSave: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({ job, onClose, onDelete, onSave }) => {
-  const { isEditing, setIsEditing } = React.useContext(ApplicationWindowContext);
+  const { isEditing, setIsEditing } = React.useContext(
+    ApplicationWindowContext
+  );
 
   return (
-    <div className="sticky top-0 z-10 rounded-t-lg border-b border-gray-200 bg-white/10 backdrop-blur-md h-[17vh]">
+    <div className="sticky top-0 z-10 rounded-t-lg border-b border-gray-200 bg-white/10 h-[17vh]">
       <div className="flex items-center justify-between p-6">
         <div className="flex items-center space-x-4">
           {isEditing ? (
@@ -80,19 +83,27 @@ const Header: React.FC<HeaderProps> = ({ job, onClose, onDelete, onSave }) => {
               />
               <AnimatedButton
                 icon={mdiDeleteOutline}
-                onClick={() => onDelete?.(job.id)}
+                onClick={onDelete}
                 caption="Delete job"
                 className="p-2 hover:bg-red-100 rounded-full transition-colors cursor-pointer"
               />
             </>
           )}
           {isEditing && (
-            <AnimatedButton
-              icon={mdiContentSave}
-              onClick={onSave}
-              caption="Save"
-              className="p-2 hover:bg-green-100 rounded-full transition-colors cursor-pointer"
-            />
+            <>
+              <AnimatedButton
+                icon={mdiFileCancel}
+                onClick={() => setIsEditing(false)}
+                caption="Discard changes"
+                className="p-2 hover:bg-red-100 rounded-full transition-colors cursor-pointer"
+              />
+              <AnimatedButton
+                icon={mdiContentSave}
+                onClick={onSave}
+                caption="Save"
+                className="p-2 hover:bg-green-100 rounded-full transition-colors cursor-pointer"
+              />
+            </>
           )}
         </div>
 
