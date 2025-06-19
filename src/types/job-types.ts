@@ -40,8 +40,8 @@ export const defaultItems: Job[] = [
     description: `This is a detailed description of the job position, including responsibilities, requirements, and any other relevant information. It should provide a clear understanding of what the job entails and what is expected from the candidate. It may be vert long, so it is important to keep it concise yet informative, highlighting the key aspects of the role to attract suitable applicants. This is a detailed description of the job position, including responsibilities, requirements, and any other relevant information. It should provide a clear understanding of what the job entails and what is expected from the candidate. It may be vert long, so it is important to keep it concise yet informative, highlighting the key aspects of the role to attract suitable applicants. This is a detailed description of the job position, including responsibilities, requirements, and any other relevant information. It should provide a clear understanding of what the job entails and what is expected from the candidate. It may be vert long, so it is important to keep it concise yet informative, highlighting the key aspects of the role to attract suitable applicants.`,
     status: defaultStatusItems[0],
     appliedDate: "2025-06-01",
-    salary: "$80,000",
-    location: "New York, NY",
+    salary: "£80,000",
+    location: "Edinburgh, UK",
     notes: "Initial application submitted.",
     link: "https://google.com",
     questions: [

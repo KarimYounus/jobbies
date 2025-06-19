@@ -1,10 +1,10 @@
 
 
-# 🗂 Job Application Manager — Project Specification
+# 🗂 'Jobbies' - Job Application Manager Project Specification
 
 ## 🧭 Purpose
 
-The Job Application Manager is a cross-platform desktop application for tracking job applications. It is intended to help me keep a clear record of each application submitted, including the specific CV and cover letter used, and its current status in the process.
+Jobbies is an Electron-based desktop application for tracking job applications. It is intended to help me keep a clear record of each application submitted, including the specific CV and cover letter used, and its current status in the process.
 
 ---
 

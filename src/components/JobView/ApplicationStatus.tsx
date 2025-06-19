@@ -1,7 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { StatusItem, defaultStatusItems } from "../../types/status-types";
-import AnimatedButton from "../AnimatedButton";
-import { mdiClose, mdiApplicationEditOutline } from "@mdi/js";
 import React, { useEffect } from "react";
 
 interface ApplicationStatusProps {

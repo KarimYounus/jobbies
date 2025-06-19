@@ -1,5 +1,6 @@
 import React from "react";
 import AnimatedButton from "../AnimatedButton";
+import Header from "./Header";
 import ApplicationQuestions from "./ApplicationQuestions";
 import CvImage from "./CVImage";
 import CoverLetter from "./CoverLetter";
@@ -20,163 +21,126 @@ import {
 } from "@mdi/js";
 import { Job } from "../../types/job-types";
 import { StatusItem } from "../../types/status-types";
+import { s } from "motion/react-client";
 
 interface JobViewProps {
   job: Job | null;
   isOpen: boolean;
   onClose: () => void;
-  onEdit?: (job: Job) => void;
   onDelete?: (jobId: string) => void;
 }
+
+interface EditModeContextType {
+  isEditing: boolean;
+  setIsEditing: (isEditing: boolean) => void;
+}
+
+export const EditModeContext = React.createContext<EditModeContextType>({
+  isEditing: false,
+  setIsEditing: () => {},
+});
 
 const JobView: React.FC<JobViewProps> = ({
   job,
   isOpen,
   onClose,
-  onEdit,
-  onDelete,
 }) => {
   if (!job) return null;
 
   const [currentStatus, setCurrentStatus] = React.useState(job.status);
+  const [isEditing, setIsEditing] = React.useState(false);
 
   const handleStatusChange = (newStatus: StatusItem) => {
     setCurrentStatus(newStatus);
-  }
+    // TODO: Implement logic to update job status in the backend
+  };
+
+  const handleSave = () => {
+  // Todo: Implement save logic
+  };
+
+  const handleDelete = () => {
+    // todo: Implement delete logic
+
+  };
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
-          className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md"
-          style={{ backgroundColor: "rgba(0, 0, 0, 0.4)" }}
-          onClick={onClose}
-        >
+    <EditModeContext.Provider value={{ isEditing, setIsEditing }}>
+      <AnimatePresence>
+        {isOpen && (
           <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
-            transition={{ duration: 0.3, ease: [0.85, 0, 0.15, 1] }}
-            className="w-full mx-20 rounded-lg shadow-2xl font-ivysoft flex flex-col max-h-[90vh]"
-            style={{ backgroundColor: "rgba(255, 255, 255, 1.0)" }}
-            onClick={(e) => e.stopPropagation()}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md"
+            style={{ backgroundColor: "rgba(0, 0, 0, 0.4)" }}
+            onClick={onClose}
           >
-            {/* Fixed Header */}
-            <div className="sticky top-0 z-10 rounded-t-lg border-b border-gray-200 bg-white/10 backdrop-blur-md">
-              <div className="flex items-center justify-between p-6">
-                <div className="flex items-center space-x-4">
-                  <Icon
-                    path={mdiOfficeBuilding}
-                    size={1.5}
-                    className="text-gray-600"
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.3, ease: [0.85, 0, 0.15, 1] }}
+              className="w-full mx-20 rounded-lg shadow-2xl font-ivysoft flex flex-col max-h-[90vh]"
+              style={{ backgroundColor: "rgba(255, 255, 255, 1.0)" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Fixed Header */}
+              <Header job={job} onClose={onClose} onDelete={handleDelete} onSave={handleSave} />
+
+              {/* Scrollable Content */}
+              <div className="flex-1 overflow-y-auto p-6 no-scrollbar">
+                {/* Key Information */}
+                <div className="mb-6">{KeyInformation(job)}</div>
+
+                {/* Application Status */}
+                <div className="mb-6">
+                  <ApplicationStatus
+                    statusItem={currentStatus}
+                    onChangeStatus={handleStatusChange}
                   />
-                  <div>
-                    <h2 className="text-2xl font-bold text-black">
-                      {job.position}
-                    </h2>
-                    <p className="text-lg text-gray-700">{job.company}</p>
-                  </div>
                 </div>
 
-                {/* Buttons */}
-                <div className="flex space-x-2">
-                  {/* Website Link Button */}
-                  {job.link && (
-                    <AnimatedButton
-                      icon={mdiWeb}
-                      onClick={() =>
-                        window.open(job.link, "_blank", "noopener,noreferrer")
-                      }
-                      caption="Open job link"
-                      captionPosition="left"
-                      className="p-2 hover:bg-blue-100 rounded-full transition-colors cursor-pointer"
-                    />
+                {/* Top Portion (CV and Job Description) */}
+                <div className="flex justify-between items-start pb-4 border-t border-gray-200 pt-6">
+                  {CvImage(job.cv)}
+                  {JobDescription(
+                    job.description || "No job description available."
                   )}
-
-                  {/* Export to JSON Button */}
-                  <AnimatedButton
-                    icon={mdiCodeJson}
-                    onClick={() => console.log("Export to JSON clicked")}
-                    caption="Copy to JSON"
-                    captionPosition="left"
-                    className="p-2 hover:bg-orange-100 rounded-full transition-colors cursor-pointer"
-                  />
-
-                  {/* Edit Button */}
-                  <AnimatedButton
-                    icon={mdiApplicationEditOutline}
-                    onClick={() => onEdit?.(job)}
-                    caption="Edit job"
-                    className="p-2 hover:bg-yellow-100 rounded-full transition-colors cursor-pointer"
-                  />
-
-                  {/* Delete Button */}
-                  <AnimatedButton
-                    icon={mdiDeleteOutline}
-                    onClick={() => onDelete?.(job.id)}
-                    caption="Delete job"
-                    className="p-2 hover:bg-red-100 rounded-full transition-colors cursor-pointer"
-                  />
                 </div>
 
-                <AnimatedButton
-                  icon={mdiClose}
-                  onClick={onClose}
-                  caption="Close"
-                  captionPosition="left"
-                />
-              </div>
-            </div>
+                {/* Notes Section */}
+                <div className="mt-6">
+                  {job.notes && Notes(job.notes || "No notes yet.")}
+                </div>
 
-            {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto p-6 no-scrollbar">
-              {/* Key Information */}
-              <div className="mb-6">{KeyInformation(job)}</div>
+                {/* Cover Letter */}
+                {job.coverLetter && (
+                  <div className="py-3 border-t border-gray-200 ">
+                    {CoverLetter(
+                      job.coverLetter || "No cover letter provided."
+                    )}
+                  </div>
+                )}
 
-              {/* Application Status */}
-              <div className="mb-6">
-                <ApplicationStatus statusItem={currentStatus} onChangeStatus={handleStatusChange}/>
-              </div>
-
-              {/* Top Portion (CV and Job Description) */}
-              <div className="flex justify-between items-start pb-4 border-t border-gray-200 pt-6">
-                {CvImage(job.cv)}
-                {JobDescription(
-                  job.description || "No job description available."
+                {/* Application Questions */}
+                {job.questions && (
+                  <div className="pt-3 border-t border-gray-200">
+                    {ApplicationQuestions(job.questions)}
+                  </div>
                 )}
               </div>
-
-              {/* Notes Section */}
-              <div className="mt-6">
-                {job.notes && Notes(job.notes || "No notes yet.")}
-              </div>
-
-              {/* Cover Letter */}
-              {job.coverLetter && (
-                <div className="py-3 border-t border-gray-200 ">
-                  {CoverLetter(job.coverLetter || "No cover letter provided.")}
-                </div>
-              )}
-
-              {/* Application Questions */}
-              {job.questions && (
-                <div className="pt-3 border-t border-gray-200">
-                  {ApplicationQuestions(job.questions)}
-                </div>
-              )}
-            </div>
+            </motion.div>
           </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+        )}
+      </AnimatePresence>
+    </EditModeContext.Provider>
   );
 };
 
 export default JobView;
+       
 
 // Function to render key information about the job
 function KeyInformation(job: Job) {
