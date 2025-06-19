@@ -1,8 +1,8 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { mdiClose } from "@mdi/js";
-import { cvFile } from "../../types/job-application-types";
-import AnimatedButton from "../AnimatedButton";
+import { cvFile } from "../../../types/job-application-types";
+import AnimatedButton from "../../AnimatedButton";
 
 // Function to render CV image with modal view
 function CvImage(cv: cvFile | undefined) {

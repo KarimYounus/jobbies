@@ -10,18 +10,18 @@ import {
   mdiContentSave,
 } from "@mdi/js";
 import AnimatedButton from "../AnimatedButton";
-import { EditModeContext } from "./ApplicationWindow";
+import { ApplicationWindowContext } from "./ApplicationWindow";
 import { JobApplication } from "../../types/job-application-types";
 
 interface HeaderProps {
   job: JobApplication;
   onClose: () => void;
-  onDelete?: (jobId: string) => void;
-  onSave?: () => void;
+  onDelete: (jobId: string) => void;
+  onSave: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({ job, onClose, onDelete, onSave }) => {
-  const { isEditing, setIsEditing } = React.useContext(EditModeContext);
+  const { isEditing, setIsEditing } = React.useContext(ApplicationWindowContext);
 
   return (
     <div className="sticky top-0 z-10 rounded-t-lg border-b border-gray-200 bg-white/10 backdrop-blur-md h-[17vh]">

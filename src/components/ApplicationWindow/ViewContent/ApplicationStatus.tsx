@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { StatusItem, defaultStatusItems } from "../../types/status-types";
+import { StatusItem, defaultStatusItems } from "../../../types/status-types";
 import React, { useEffect } from "react";
 
 interface ApplicationStatusProps {

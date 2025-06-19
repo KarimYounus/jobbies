@@ -113,7 +113,7 @@ const JobList: React.FC<JobListProps> = ({ title, items, children }) => {
       </motion.div>
 
       <ApplicationWindow
-        job={selectedJob}
+        jobApplication={selectedJob}
         isOpen={isJobViewOpen}
         onClose={handleCloseJobView}
       />
