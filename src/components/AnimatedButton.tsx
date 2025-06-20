@@ -5,7 +5,7 @@ import Icon from "@mdi/react";
 interface AnimatedButtonProps {
     icon: string;
     onClick: () => void;
-    caption: string;
+    caption?: string;
     className?: string;
     captionPosition?: "left" | "right";
     disabled?: boolean;
@@ -42,7 +42,7 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
       </motion.button>
 
       <AnimatePresence>
-        {isHovered && (
+        {caption && isHovered && (
           <motion.div
             initial={{
               opacity: 0,

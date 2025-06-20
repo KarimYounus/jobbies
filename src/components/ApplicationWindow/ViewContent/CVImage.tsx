@@ -1,11 +1,11 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { mdiClose } from "@mdi/js";
-import { cvFile } from "../../../types/job-application-types";
+import { CurriculumVitae } from "../../../types/job-application-types";
 import AnimatedButton from "../../AnimatedButton";
 
 // Function to render CV image with modal view
-function CvImage(cv: cvFile | undefined) {
+function CvImage(cv: CurriculumVitae | undefined) {
   const [cvView, setCVView] = React.useState(false);
 
   // If cv is undefined, we render a colored box instead of the image
@@ -43,41 +43,10 @@ function CvImage(cv: cvFile | undefined) {
       {/* CV Expanded View Modal */}
       <AnimatePresence>
         {cvView && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-[60] flex items-center justify-center backdrop-blur-lg"
-            style={{ backgroundColor: "rgba(0, 0, 0, 0.8)" }}
-            onClick={() => setCVView(false)}
-          >
-            <motion.div
-              initial={{ scale: 1, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.5, opacity: 0 }}
-              transition={{ duration: 0.4, ease: [0.85, 0, 0.15, 1] }}
-              className="relative max-w-[70vw] max-h-[80vh] flex items-center justify-center"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Close button */}
-              <AnimatedButton
-                icon={mdiClose}
-                onClick={() => setCVView(false)}
-                caption="Close"
-                className="absolute top-4 left-[70vh] p-2 bg-white bg-opacity-70 rounded-full shadow-lg hover:bg-opacity-90 transition-colors cursor-pointer"
-                iconClassName="text-gray-800"
-              />
-
-              {/* Expanded CV Image */}
-              <motion.img
-                src="src/assets/images/cv.png"
-                alt="CV Full View"
-                className="max-w-full max-h-[95vh] object-contain rounded-lg shadow-2xl"
-                layoutId="cv-image" // This creates a smooth transition between states
-              />
-            </motion.div>
-          </motion.div>
+          <FullscreenCV
+            imagePath={cv.imagePreviewPath || "src/assets/images/cv.png"}
+            setIsExpanded={setCVView}
+          />
         )}
       </AnimatePresence>
     </>
@@ -85,3 +54,49 @@ function CvImage(cv: cvFile | undefined) {
 }
 
 export default CvImage;
+
+export function FullscreenCV({
+  imagePath,
+  setIsExpanded,
+}: {
+  imagePath: string;
+  setIsExpanded: (isExpanded: boolean) => void;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+      className="fixed inset-0 z-[60] flex items-center justify-center backdrop-blur-lg"
+      style={{ backgroundColor: "rgba(0, 0, 0, 0.8)" }}
+      onClick={() => setIsExpanded(false)}
+    >
+      <motion.div
+        initial={{ scale: 1, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.5, opacity: 0 }}
+        transition={{ duration: 0.4, ease: [0.85, 0, 0.15, 1] }}
+        className="relative max-w-[70vw] max-h-[80vh] flex items-center justify-center"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Close button */}
+        <AnimatedButton
+          icon={mdiClose}
+          onClick={() => setIsExpanded(false)}
+          caption="Close"
+          className="absolute top-4 left-[70vh] p-2 bg-white bg-opacity-70 rounded-full shadow-lg hover:bg-opacity-90 transition-colors cursor-pointer"
+          iconClassName="text-gray-800"
+        />
+
+        {/* Expanded CV Image */}
+        <motion.img
+          src={imagePath}
+          alt="CV Full View"
+          className="max-w-full max-h-[95vh] object-contain rounded-lg shadow-2xl"
+          layoutId="cv-image" // This creates a smooth transition between states
+        />
+      </motion.div>
+    </motion.div>
+  );
+}

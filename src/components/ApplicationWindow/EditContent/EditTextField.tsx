@@ -21,9 +21,10 @@ const EditTextField: React.FC<EditTextFieldProps> = ({
     <div>
       <h3 className="text-lg font-semibold text-black">{label}</h3>
       <motion.input
-        transition={{ delay: 0.4, duration: 0.2 }}
+        transition={{ duration: 0.2 }}
         animate={{
             borderColor: isFocused ? "#34a0a4" : "#d1d5db", // Gray 300
+            borderWidth: isFocused ? "4px" : "1px",
         }}
         type={type}
         name={name}
@@ -35,7 +36,7 @@ const EditTextField: React.FC<EditTextFieldProps> = ({
         onBlur={() => {
             setIsFocused(false);
         }}
-        className="mt-1 block w-full px-3 py-2 bg-white border border-gray-100 text-black rounded-md shadow-sm focus:outline-none focus:shadow-lg sm:text-sm"
+        className="mt-1 block w-full px-3 py-2 bg-white text-black rounded-md shadow-sm outline-none focus:shadow-lg sm:text-sm"
       />
     </div>
   );

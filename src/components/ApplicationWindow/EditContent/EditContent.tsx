@@ -1,5 +1,5 @@
 import React, { forwardRef, useContext, useImperativeHandle, useState } from "react";
-import { cvFile, JobApplication } from "../../../types/job-application-types";
+import { CurriculumVitae, JobApplication } from "../../../types/job-application-types";
 import { ApplicationWindowContext } from "../ApplicationWindow";
 import EditCV from "./EditCV";
 import EditQuestions from "./EditQuestions";
@@ -22,7 +22,7 @@ const EditContent = forwardRef<EditContentRef>((_, ref) => {
     setEditedJob({ ...editedJob, [name]: value });
   };
 
-  const handleCVChange = (cv: cvFile) => {
+  const handleCVChange = (cv: CurriculumVitae) => {
     setEditedJob({ ...editedJob, cv });
   };
 
@@ -64,7 +64,7 @@ const EditContent = forwardRef<EditContentRef>((_, ref) => {
       <EditTextField label="Location" name="location" value={editedJob.location || ''} onChange={handleInputChange} />
       <EditTextArea label="Notes" name="notes" value={editedJob.notes || ''} onChange={handleInputChange} />
       <EditTextField label="Link" name="link" value={editedJob.link || ''} onChange={handleInputChange} />
-      <EditCV cv={editedJob.cv} onCVChange={handleCVChange} />
+      <EditCV selectedCV={editedJob.cv} onCVChange={handleCVChange} />
       <EditTextArea label="Cover Letter" name="coverLetter" value={editedJob.coverLetter || ''} onChange={handleInputChange} />
       <EditQuestions
         questions={editedJob.questions || []}

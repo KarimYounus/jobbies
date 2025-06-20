@@ -13,15 +13,19 @@ export interface JobApplication {
   location?: string;
   notes?: string;
   link?: string; // optional field to store a link to the job posting or company website
-  cv?: cvFile; // field to store CV file information
+  cv?: CurriculumVitae; // field to store CV file information
   coverLetter?: string; // field to store cover letter text content
   questions?: ApplicationQuestion[]; // field to store application questions and answers
 }
 
-// cvFile type definition
-export interface cvFile {
+// CV type definition
+export interface CurriculumVitae {
+  id: string;
   name: string;
-  path: string;
+  imagePreviewPath: string; // local path to the CV image preview
+  pdfPath?: string; // optional field to store the path to the CV PDF file
+  date?: string; // optional field to store the date of the CV
+  notes?: string; // optional field to store additional notes about the CV
 }
 
 // Question type definition
@@ -55,8 +59,9 @@ export const defaultItems: JobApplication[] = [
       }
     ],
     cv: {
+      id: "cv1",
       name: "cv.png",
-      path:"C:/Users/younu/Documents/Git/jobbies/src/assets/images/cv.png"
+      imagePreviewPath:"C:/Users/younu/Documents/Git/jobbies/src/assets/images/cv.png"
     },
     coverLetter: `Dear Sir/Madam,
 I am writing to express my keen interest in contributing to ClearSky Medical's mission of advancing healthcare
