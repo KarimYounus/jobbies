@@ -3,6 +3,8 @@ import { CurriculumVitae } from "../../../types/job-application-types";
 import { cvCollection as initialCVs } from "../../../data/cv-collection";
 import CVCard from "./CVCard";
 import CreateNewCV from "./CreateNewCV";
+import AnimatedButton from "../../AnimatedButton";
+import { mdiPlus, mdiCloseCircle, mdiTextBoxMinus, mdiTextBoxPlus } from "@mdi/js";
 
 interface EditCVProps {
   selectedCV: CurriculumVitae | undefined;
@@ -32,12 +34,21 @@ const EditCV: React.FC<EditCVProps> = ({ selectedCV, onCVChange }) => {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-semibold leading-6 text-gray-900">Curriculum Vitae</h2>
-        <button 
-          onClick={() => setShowCreateForm(!showCreateForm)}
-          className="px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
-          {showCreateForm ? 'Cancel' : 'Create New CV'}
-        </button>
+        {!showCreateForm ? (
+          <AnimatedButton
+            onClick={() => setShowCreateForm(true)}
+            className="bg-teal-200 text-white px-4 py-2 rounded-lg hover:bg-teal-300 transition-colors"
+            caption="Create New CV"
+            icon={mdiTextBoxPlus}
+          />
+        ) : (
+          <AnimatedButton
+            onClick={() => setShowCreateForm(false)}
+            className="bg-red-200 text-white px-4 py-2 rounded-lg hover:bg-red-400 transition-colors"
+            caption="Cancel"
+            icon={mdiCloseCircle}
+          />
+        )}
       </div>
 
       {showCreateForm ? (
