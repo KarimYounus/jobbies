@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import JobListItem from "./JobListItem";
-import { JobApplication, defaultItems } from "../types/job-application-types"; 
+import { JobApplication, defaultApplications } from "../types/job-application-types"; 
 import ApplicationWindow from "./ApplicationWindow/ApplicationWindow";
 
 interface JobListProps {
@@ -98,13 +98,13 @@ const JobList: React.FC<JobListProps> = ({ title, items, children }) => {
       >
         <div className="space-y-2">
           <JobListItem
-            job={defaultItems[0]}
+            job={defaultApplications[0]}
             onEdit={(job) => console.log("Edit job:", job)}
             onDelete={(id) => console.log("Delete job with id:", id)}
             onView={handleJobView}
           />
           <JobListItem
-            job={defaultItems[1]}
+            job={defaultApplications[1]}
             onEdit={(job) => console.log("Edit job:", job)}
             onDelete={(id) => console.log("Delete job with id:", id)}
             onView={handleJobView}

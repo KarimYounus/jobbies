@@ -1,4 +1,5 @@
 import { getStatusByText, StatusItem, defaultStatusItems } from "./status-types";
+import { cvCollection } from "../data/cv-collection";
 
 // Job type definition
 // This interface describes the structure of a job object in the application.
@@ -6,7 +7,7 @@ export interface JobApplication {
   id: string;
   company: string;
   position: string;
-  description?: string; // optional field to store job description
+  description?: string;
   status: StatusItem;
   appliedDate: string;
   salary?: string;
@@ -16,6 +17,7 @@ export interface JobApplication {
   cv?: CurriculumVitae; // field to store CV file information
   coverLetter?: string; // field to store cover letter text content
   questions?: ApplicationQuestion[]; // field to store application questions and answers
+  appliedVia?: string; 
 }
 
 // CV type definition
@@ -35,8 +37,16 @@ export interface ApplicationQuestion {
   answer: string;
 }
 
+export const defaultApplicationViaItems = [
+  { text: "LinkedIn", color: "bg-blue-500" },
+  { text: "Company Website", color: "bg-green-500" },
+  { text: "Referral", color: "bg-yellow-500" },
+  { text: "Job Board", color: "bg-purple-500" },
+  { text: "Recruiter", color: "bg-red-500" }
+]
+
 // Default job items for initial state
-export const defaultItems: JobApplication[] = [
+export const defaultApplications: JobApplication[] = [
   {
     id: "1",
     company: "Tech Corp",
@@ -58,11 +68,7 @@ export const defaultItems: JobApplication[] = [
         answer:   `The reason I'm drawn to Accolite is because it seems like a company that explores many different areas which should present me with lots of different opportunities to learn and explore my field. Personally, I am still not sure exactly what I want to specialise in, which is why digital consultancy seems like an excellent entry point. The projects and goals that differing clients might bring to the table sounds like an exciting prospect, and will continually bring in new challenges from which I can learn from. Essentially, I'm looking for a role where I can contribute meaningfully while exploring what kind of engineer I want to become, and Accolite seems like the ideal place to do exactly that.`
       }
     ],
-    cv: {
-      id: "cv1",
-      name: "cv.png",
-      imagePreviewPath:"C:/Users/younu/Documents/Git/jobbies/src/assets/images/cv.png"
-    },
+    cv: cvCollection[0], 
     coverLetter: `Dear Sir/Madam,
 I am writing to express my keen interest in contributing to ClearSky Medical's mission of advancing healthcare
 through machine learning. As a final-year MEng Software Engineering student at Heriot-Watt University, on
