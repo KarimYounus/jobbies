@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import JobListItem from "./JobListItem";
-import { JobApplication, defaultApplications } from "../types/job-application-types"; 
+import { JobApplication } from "../types/job-application-types"; 
 import ApplicationWindow from "./ApplicationWindow/ApplicationWindow";
 
 interface JobListProps {
   title: string;
-  items: any[];
+  items: JobApplication[];
   children?: React.ReactNode;
 }
 
@@ -27,12 +27,6 @@ const JobList: React.FC<JobListProps> = ({ title, items, children }) => {
   const handleCloseJobView = () => {
     setSelectedJob(null);
     setIsJobViewOpen(false);
-  }
-
-  // Placeholder function to handle job editing
-  const handleJobEdit = (job: JobApplication) => {
-    console.log("Edit job:", job);
-    // Implement edit logic here
   }
 
   // State to track content and header heights for animation
@@ -97,18 +91,13 @@ const JobList: React.FC<JobListProps> = ({ title, items, children }) => {
         className="px-8 pb-8"
       >
         <div className="space-y-2">
-          <JobListItem
-            job={defaultApplications[0]}
-            onEdit={(job) => console.log("Edit job:", job)}
-            onDelete={(id) => console.log("Delete job with id:", id)}
-            onView={handleJobView}
-          />
-          <JobListItem
-            job={defaultApplications[1]}
-            onEdit={(job) => console.log("Edit job:", job)}
-            onDelete={(id) => console.log("Delete job with id:", id)}
-            onView={handleJobView}
-          />
+          {items.map((item, index) => (
+            <JobListItem
+              key={index}
+              job={item}
+              onClick={() => handleJobView(item)}
+            />
+          ))}
         </div>
       </motion.div>
 

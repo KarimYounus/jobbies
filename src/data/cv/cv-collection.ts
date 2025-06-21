@@ -1,4 +1,4 @@
-import { CurriculumVitae } from '../types/job-application-types';
+import { CurriculumVitae } from '../../types/job-application-types';
 
 export const cvCollection: CurriculumVitae[] = [
   {

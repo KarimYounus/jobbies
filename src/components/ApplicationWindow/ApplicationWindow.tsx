@@ -9,8 +9,6 @@ interface ApplicationWindowProps {
   jobApplication: JobApplication | null; // Job Application Data Structure
   isOpen: boolean;
   onClose: () => void;
-  onDelete?: (jobId: string) => void;
-  onSave?: (job: JobApplication) => void;
 }
 
 interface ApplicationWindowContextType {
@@ -32,8 +30,6 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
   jobApplication: job,
   isOpen,
   onClose,
-  onDelete,
-  onSave,
 }) => {
   if (!job) return null;
 
@@ -49,21 +45,10 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
     if (editContentRef.current) {
       editContentRef.current.handleSaveChanges();
     }
-    if (onSave && jobApplication) {
-      onSave(jobApplication);
-    }
     setIsEditing(false);
   };
 
   const handleDeleteAndClose = () => {
-    if (onDelete && jobApplication) {
-      onDelete(jobApplication.id);
-    }
-    onClose();
-  };
-
-  const handleDelete = () => {
-    // todo: Implement delete logic
   };
 
   return (

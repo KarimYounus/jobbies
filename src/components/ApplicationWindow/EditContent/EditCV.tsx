@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { CurriculumVitae } from "../../../types/job-application-types";
-import { cvCollection as initialCVs } from "../../../data/cv-collection";
+import { cvCollection as initialCVs } from "../../../data/cv/cv-collection";
 import CVCard from "./CVCard";
 import CreateNewCV from "./CreateNewCV";
 import AnimatedButton from "../../AnimatedButton";
-import { mdiPlus, mdiCloseCircle, mdiTextBoxMinus, mdiTextBoxPlus } from "@mdi/js";
+import { mdiCloseCircle, mdiTextBoxPlus } from "@mdi/js";
 
 interface EditCVProps {
   selectedCV: CurriculumVitae | undefined;

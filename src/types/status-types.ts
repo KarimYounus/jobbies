@@ -4,6 +4,7 @@ export interface StatusItem {
   text: string;
   color: string;
   round?: number; // Optional field indicating the round of the status, if applicable
+  updatedAt?: string; // Optional field to store the last updated date of the status
 }
 
 // Default status items for initial state
@@ -13,6 +14,7 @@ export const defaultStatusItems: StatusItem[] = [
   { text: "Interview Stage", color: "#76c893" },
   { text: "Offer", color: "#abff4f" },
   { text: "Rejected", color: "#ef233c" },
+  { text: "No Response", color: "#F05D23" },
 ];
 
 // Helper function to get status item by text (identifier)

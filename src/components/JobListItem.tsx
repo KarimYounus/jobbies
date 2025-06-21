@@ -6,16 +6,12 @@ import { JobApplication } from "../types/job-application-types";
 
 interface JobListItemProps {
   job: JobApplication;
-  onEdit?: (job: JobApplication) => void;
-  onDelete?: (jobId: string) => void;
-  onView?: (job: JobApplication) => void;
+  onClick?: (job: JobApplication) => void;
 }
 
 const JobListItem: React.FC<JobListItemProps> = ({
   job,
-  onEdit,
-  onDelete,
-  onView,
+  onClick: onClick,
 }) => {
   return (
     <motion.div
@@ -28,7 +24,7 @@ const JobListItem: React.FC<JobListItemProps> = ({
         cursor: "pointer",
       }}
       onClick={() => {
-        onView?.(job);
+        onClick?.(job);
       }}
       // style={{ backgroundColor: "rgba(219, 255, 246, 1.0)" }}
       className="py-4 rounded-xl shadow-md hover:shadow-lg transition-shadow font-ivysoft bg-gray-50"

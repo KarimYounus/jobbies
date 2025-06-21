@@ -130,7 +130,7 @@ const EditContent = forwardRef<EditContentRef>((_, ref) => {
         options={["LinkedIn", "Website", "Referral", "Other"]}
         value={editedJob.appliedVia || ""}
         onSelect={(value) => setEditedJob({ ...editedJob, appliedVia: value })}
-        />
+      />
       <EditCV selectedCV={editedJob.cv} onCVChange={handleCVChange} />
       <EditTextArea
         label="Cover Letter"
