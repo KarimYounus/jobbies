@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 
 
-function CoverLetter(coverLetter: string) {
+function ExpandableText(header: string, coverLetter: string) {
   const [isExpanded, setIsExpanded] = React.useState(false);
 
   return (
@@ -19,7 +19,7 @@ function CoverLetter(coverLetter: string) {
           }
         }}
       >
-        <h3 className="text-lg font-semibold text-black">Cover Letter</h3>
+        <h3 className="text-lg font-semibold text-black">{header}</h3>
         <motion.div
           animate={{ rotate: isExpanded ? 180 : 0 }}
           transition={{ duration: 0.2 }}
@@ -55,4 +55,4 @@ function CoverLetter(coverLetter: string) {
   );
 }
 
-export default CoverLetter;
+export default ExpandableText;

@@ -2,7 +2,7 @@ import React from "react";
 import { ApplicationWindowContext } from "../ApplicationWindow";
 import ApplicationStatus from "./ApplicationStatus";
 import CvImage from "./CVImage";
-import CoverLetter from "./CoverLetter";
+import ExpandableText from "./ExpandableText";
 import ApplicationQuestions from "./ApplicationQuestions";
 import Icon from "@mdi/react";
 import {
@@ -83,38 +83,16 @@ function JobDescription(description: string) {
   );
 }
 
-// Notes section
-function Notes(noteText: string) {
-  return (
-    <div className="flex-1 border-t border-gray-200 pt-4">
-      <h3 className="text-lg font-semibold text-black mb-2">Notes</h3>
-      <div className="relative">
-        <div className="max-h-95 overflow-y-auto no-scrollbar scrollbar-track-white-100 text-justify">
-          <p className="text-gray-800 leading-relaxed text-sm mb-10">
-            {noteText || "No notes available."}
-          </p>
-        </div>
-        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent pointer-events-none" />
-      </div>
-    </div>
-  );
-}
-
 const ViewContent: React.FC = () => {
-  const { jobApplication } = React.useContext(ApplicationWindowContext);
+  const { jobApplication, onStatusChange } = React.useContext(ApplicationWindowContext);
 
-  // Defensive: If context is missing or jobApplication is null, render nothing
   if (!jobApplication) {
-    console.warn("No job application data available in context.");
+    console.warn("Job Application data is not available in ViewContent");
+    return null
+  };
 
-    return null};
-
-  // Optionally, you could manage status state here if you want to allow status changes in view mode
-  const [currentStatus, setCurrentStatus] = React.useState(jobApplication.status);
-
-  const handleStatusChange = (newStatus: StatusItem) => {
-    setCurrentStatus(newStatus);
-    // Optionally: update status in context or backend here
+  const handleStatusUpdate = (newStatus: StatusItem) => {
+    onStatusChange?.(newStatus); // Callback to update status with new status passed up from ApplicationStatus component
   };
 
   return (
@@ -125,8 +103,8 @@ const ViewContent: React.FC = () => {
       {/* Application Status */}
       <div className="mb-6">
         <ApplicationStatus
-          statusItem={currentStatus}
-          onChangeStatus={handleStatusChange}
+          statusItem={jobApplication.status}
+          onChangeStatus={handleStatusUpdate}
         />
       </div>
 
@@ -138,13 +116,13 @@ const ViewContent: React.FC = () => {
 
       {/* Notes Section */}
       <div className="mt-6">
-        {jobApplication.notes && Notes(jobApplication.notes || "No notes yet.")}
+        {ExpandableText("Notes",jobApplication.notes || "No notes yet.")}
       </div>
 
       {/* Cover Letter */}
       {jobApplication.coverLetter && (
         <div className="py-3 border-t border-gray-200 ">
-          {CoverLetter(jobApplication.coverLetter || "No cover letter provided.")}
+          {ExpandableText("Cover Letter",jobApplication.coverLetter || "No cover letter provided.")}
         </div>
       )}
 

@@ -1,13 +1,5 @@
-import React, {
-  forwardRef,
-  useContext,
-  useImperativeHandle,
-  useState,
-} from "react";
-import {
-  CurriculumVitae,
-  JobApplication,
-} from "../../../types/job-application-types";
+import React, { useContext } from "react";
+import { CurriculumVitae } from "../../../types/job-application-types";
 import { ApplicationWindowContext } from "../ApplicationWindow";
 import EditCV from "./EditCV";
 import EditQuestions from "./EditQuestions";
@@ -15,28 +7,22 @@ import EditTextArea from "./EditTextArea";
 import EditTextField from "./EditTextField";
 import EditDropdownList from "./EditDropdownList";
 
-export interface EditContentRef {
-  handleSaveChanges: () => void;
-}
-
-const EditContent = forwardRef<EditContentRef>((_, ref) => {
-  const { jobApplication, setJobApplication } = useContext(
-    ApplicationWindowContext
-  );
+const EditContent: React.FC = () => {
+  const { jobApplication, updateField } = useContext(ApplicationWindowContext);
 
   if (!jobApplication) return null;
 
-  const [editedJob, setEditedJob] = useState<JobApplication>(jobApplication);
-
+  // Handler for input changes
+  // This function updates the job application state when input fields change
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setEditedJob({ ...editedJob, [name]: value });
+    updateField(name as keyof typeof jobApplication, value);
   };
 
   const handleCVChange = (cv: CurriculumVitae) => {
-    setEditedJob({ ...editedJob, cv });
+    updateField('cv', cv);
   };
 
   const handleQuestionChange = (
@@ -44,83 +30,71 @@ const EditContent = forwardRef<EditContentRef>((_, ref) => {
     question: string,
     answer: string
   ) => {
-    const questions = [...(editedJob.questions || [])];
+    const questions = [...(jobApplication.questions || [])];
     questions[index] = { question, answer };
-    setEditedJob({ ...editedJob, questions });
+    updateField('questions', questions);
   };
 
   const handleAddQuestion = () => {
-    const questions = [...(editedJob.questions || [])];
+    const questions = [...(jobApplication.questions || [])];
     questions.push({ question: "", answer: "" });
-    setEditedJob({ ...editedJob, questions });
+    updateField('questions', questions);
   };
 
   const handleRemoveQuestion = (index: number) => {
-    const questions = [...(editedJob.questions || [])];
+    const questions = [...(jobApplication.questions || [])];
     questions.splice(index, 1);
-    setEditedJob({ ...editedJob, questions });
+    updateField('questions', questions);
   };
-
-  const handleSaveChanges = () => {
-    if (setJobApplication) {
-      setJobApplication(editedJob);
-    }
-    console.log("Saved changes:", editedJob);
-  };
-
-  useImperativeHandle(ref, () => ({
-    handleSaveChanges,
-  }));
-
   return (
     <div className="p-4 space-y-4 bg-gray-50">
       {/* Company */}
       <EditTextField
         label="Company"
         name="company"
-        value={editedJob.company}
+        value={jobApplication.company}
         onChange={handleInputChange}
       />
       {/* Position */}
       <EditTextField
         label="Position"
         name="position"
-        value={editedJob.position}
+        value={jobApplication.position}
         onChange={handleInputChange}
       />
       {/* Description */}
       <EditTextArea
         label="Description"
         name="description"
-        value={editedJob.description || ""}
+        value={jobApplication.description || ""}
         onChange={handleInputChange}
       />
       {/* Salary */}
       <EditTextField
         label="Salary"
         name="salary"
-        value={editedJob.salary || ""}
+        value={jobApplication.salary || ""}
         onChange={handleInputChange}
       />
       {/* Location */}
       <EditTextField
         label="Location"
         name="location"
-        value={editedJob.location || ""}
+        value={jobApplication.location || ""}
         onChange={handleInputChange}
       />
       {/* Notes */}
       <EditTextArea
         label="Notes"
         name="notes"
-        value={editedJob.notes || ""}
+        value={jobApplication.notes || ""}
         onChange={handleInputChange}
       />
       {/* Web Link */}
       <EditTextField
         label="Link"
         name="link"
-        value={editedJob.link || ""}
+        value={jobApplication.link || ""}
         onChange={handleInputChange}
       />
       {/* Applied Via */}
@@ -128,24 +102,23 @@ const EditContent = forwardRef<EditContentRef>((_, ref) => {
         label="Applied Via"
         name="appliedVia"
         options={["LinkedIn", "Website", "Referral", "Other"]}
-        value={editedJob.appliedVia || ""}
-        onSelect={(value) => setEditedJob({ ...editedJob, appliedVia: value })}
+        value={jobApplication.appliedVia || ""}
+        onSelect={(value) => updateField('appliedVia', value)}
       />
-      <EditCV selectedCV={editedJob.cv} onCVChange={handleCVChange} />
+      <EditCV selectedCV={jobApplication.cv} onCVChange={handleCVChange} />
       <EditTextArea
         label="Cover Letter"
         name="coverLetter"
-        value={editedJob.coverLetter || ""}
+        value={jobApplication.coverLetter || ""}
         onChange={handleInputChange}
       />
       <EditQuestions
-        questions={editedJob.questions || []}
+        questions={jobApplication.questions || []}
         onQuestionChange={handleQuestionChange}
         onAddQuestion={handleAddQuestion}
         onRemoveQuestion={handleRemoveQuestion}
       />
-    </div>
-  );
-});
+    </div>  );
+};
 
 export default EditContent;
