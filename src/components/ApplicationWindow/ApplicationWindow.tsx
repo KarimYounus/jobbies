@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, createContext, useState, useRef } from "react";
 import Header from "./Header";
 import ViewContent from "./ViewContent/ViewContent";
 import EditContent, { EditContentRef } from "./EditContent/EditContent";
@@ -9,6 +9,7 @@ interface ApplicationWindowProps {
   jobApplication: JobApplication | null; // Job Application Data Structure
   isOpen: boolean;
   onClose: () => void;
+  edit?: boolean; // Optional prop to control initial edit mode
 }
 
 interface ApplicationWindowContextType {
@@ -19,7 +20,7 @@ interface ApplicationWindowContextType {
 }
 
 export const ApplicationWindowContext =
-  React.createContext<ApplicationWindowContextType>({
+  createContext<ApplicationWindowContextType>({
     jobApplication: null,
     setJobApplication: () => {},
     isEditing: false,
@@ -30,14 +31,15 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
   jobApplication: job,
   isOpen,
   onClose,
+  edit=false,
 }) => {
   if (!job) return null;
 
-  const [jobApplication, setJobApplication] = React.useState<JobApplication | null>(job);
-  const [isEditing, setIsEditing] = React.useState(false);
-  const editContentRef = React.useRef<EditContentRef>(null);
+  const [jobApplication, setJobApplication] = useState<JobApplication | null>(job);
+  const [isEditing, setIsEditing] = useState(edit); // State to track if in edit mode
+  const editContentRef = useRef<EditContentRef>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setJobApplication(job);
   }, [job]);
 
@@ -48,8 +50,7 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
     setIsEditing(false);
   };
 
-  const handleDeleteAndClose = () => {
-  };
+  const handleDeleteAndClose = () => {};
 
   return (
     <ApplicationWindowContext.Provider
@@ -67,7 +68,6 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
             <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl h-full max-h-[90vh] flex flex-col">
               {jobApplication && (
                 <Header
-                  job={jobApplication}
                   onClose={onClose}
                   onSave={handleSave}
                   onDelete={handleDeleteAndClose}
@@ -89,5 +89,3 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
 };
 
 export default ApplicationWindow;
-
-

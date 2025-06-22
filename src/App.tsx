@@ -5,11 +5,31 @@ import { mdiNotePlusOutline } from "@mdi/js";
 import { collectionHandler } from "./data/CollectionHandler";
 import { useEffect, useState } from "react";
 import { JobApplication } from "./types/job-application-types";
+import ApplicationWindow from "./components/ApplicationWindow/ApplicationWindow";
+import { defaultStatusItems } from "./types/status-types";
+import { s } from "motion/react-client";
 
 function App() {
   // State to hold the applications grouped by status
-  const [applicationsByStatus, setApplicationsByStatus] = useState<Map<string, JobApplication[]>>(new Map());
+  const [applicationsByStatus, setApplicationsByStatus] = useState<
+    Map<string, JobApplication[]>
+  >(new Map());
   const [isLoading, setIsLoading] = useState(true);
+  const [isJobViewOpen, setIsJobViewOpen] = useState(false);
+
+  const newApplication: JobApplication = {
+    id: "",
+    company: "",
+    position: "",
+    description: "",
+    status: defaultStatusItems[0],
+    appliedDate: new Date().toISOString().split("T")[0],
+    salary: "",
+    location: "",
+    notes: "",
+    link: "",
+    questions: [],
+  };
 
   // Initialize the collection handler and set up event listeners
   useEffect(() => {
@@ -19,7 +39,7 @@ function App() {
         setApplicationsByStatus(collectionHandler.getApplicationsByStatus());
         setIsLoading(false);
       } catch (error) {
-        console.error('Failed to initialize data:', error);
+        console.error("Failed to initialize data:", error);
         setIsLoading(false);
       }
     };
@@ -29,19 +49,31 @@ function App() {
       setApplicationsByStatus(collectionHandler.getApplicationsByStatus());
     };
 
-    collectionHandler.addEventListener('applications-loaded', handleDataChange);
-    collectionHandler.addEventListener('application-added', handleDataChange);
-    collectionHandler.addEventListener('application-updated', handleDataChange);
-    collectionHandler.addEventListener('application-deleted', handleDataChange);
+    collectionHandler.addEventListener("applications-loaded", handleDataChange);
+    collectionHandler.addEventListener("application-added", handleDataChange);
+    collectionHandler.addEventListener("application-updated", handleDataChange);
+    collectionHandler.addEventListener("application-deleted", handleDataChange);
 
     initializeData();
 
     // Cleanup event listeners on component unmount
     return () => {
-      collectionHandler.removeEventListener('applications-loaded', handleDataChange);
-      collectionHandler.removeEventListener('application-added', handleDataChange);
-      collectionHandler.removeEventListener('application-updated', handleDataChange);
-      collectionHandler.removeEventListener('application-deleted', handleDataChange);
+      collectionHandler.removeEventListener(
+        "applications-loaded",
+        handleDataChange
+      );
+      collectionHandler.removeEventListener(
+        "application-added",
+        handleDataChange
+      );
+      collectionHandler.removeEventListener(
+        "application-updated",
+        handleDataChange
+      );
+      collectionHandler.removeEventListener(
+        "application-deleted",
+        handleDataChange
+      );
     };
   }, []);
 
@@ -49,7 +81,7 @@ function App() {
   if (isLoading) {
     return (
       <motion.div className="flex flex-col w-full justify-center items-center font-ivysoft">
-        <motion.div 
+        <motion.div
           className="text-center text-white mt-8"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -72,7 +104,6 @@ function App() {
       >
         {/* Logo */}
         <div className="w-10"></div>
-
         <motion.img
           src="src/assets/images/logo-trans.png"
           alt="Logo"
@@ -82,9 +113,6 @@ function App() {
           transition={{ duration: 0.3, type: "spring", stiffness: 300 }}
         />
 
-        {/* <motion.h1 className="text-6xl font-ivysoft font-bold tracking-wide my-2" style={{ color: '#2F3E46' }}>
-          Jobbies
-        </motion.h1> */}
         {/* Buttons */}
         <motion.div className="flex gap-4 pr-5">
           <AnimatedButton
@@ -92,7 +120,7 @@ function App() {
             caption="Add Job"
             className="p-2 mx-3 hover:bg-teal-200 rounded-lg transition-colors cursor-pointer"
             iconClassName="text-gray-200 hover:text-gray-800"
-            onClick={() => console.log("Add Job Clicked")}
+            onClick={() => setIsJobViewOpen(true)}
           />
         </motion.div>
       </motion.div>
@@ -119,6 +147,12 @@ function App() {
           )
         )}
       </motion.div>
+      <ApplicationWindow
+        isOpen={isJobViewOpen}
+        onClose={() => setIsJobViewOpen(false)}
+        jobApplication={newApplication}
+        edit={true}
+      />
     </motion.div>
   );
 }

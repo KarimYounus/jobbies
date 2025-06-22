@@ -34,7 +34,6 @@ function createWindow() {
 function setupFileSystemIPC() {
   const getDataFilePath = () => {
     const userDataPath = app.getPath("userData");
-    console.log("User Data Path:", userDataPath);
     return path.join(userDataPath, "job-applications.json");
   };
   ipcMain.handle("load-applications", async () => {

@@ -58,7 +58,6 @@ function setupFileSystemIPC() {
   // Define the data file path inside the app's user data directory
   const getDataFilePath = () => {
     const userDataPath = app.getPath("userData");
-    console.log("User Data Path:", userDataPath);
     return path.join(userDataPath, "job-applications.json");
   };
 

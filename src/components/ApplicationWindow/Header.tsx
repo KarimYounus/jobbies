@@ -12,19 +12,21 @@ import {
 } from "@mdi/js";
 import AnimatedButton from "../AnimatedButton";
 import { ApplicationWindowContext } from "./ApplicationWindow";
-import { JobApplication } from "../../types/job-application-types";
 
 interface HeaderProps {
-  job: JobApplication;
   onClose: () => void;
   onDelete: () => void;
   onSave: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ job, onClose, onDelete, onSave }) => {
-  const { isEditing, setIsEditing } = React.useContext(
+const Header: React.FC<HeaderProps> = ({ onClose, onDelete, onSave }) => {
+  const { jobApplication, isEditing, setIsEditing } = React.useContext(
     ApplicationWindowContext
   );
+
+  if (!jobApplication) {
+    throw new Error("Job application data is not available inside Header");
+  };
 
   return (
     <div className="sticky top-0 z-10 rounded-t-lg border-b border-gray-200 bg-white/10 h-[17vh]">
@@ -45,10 +47,10 @@ const Header: React.FC<HeaderProps> = ({ job, onClose, onDelete, onSave }) => {
           )}
           <div>
             <h2 className="text-2xl font-bold text-black">
-              {isEditing ? "Edit Application" : job.position}
+              {isEditing ? "Edit Application" : jobApplication.position}
             </h2>
             {!isEditing && (
-              <p className="text-lg text-gray-700">{job.company}</p>
+              <p className="text-lg text-gray-700">{jobApplication.company}</p>
             )}
           </div>
         </div>
@@ -57,11 +59,11 @@ const Header: React.FC<HeaderProps> = ({ job, onClose, onDelete, onSave }) => {
         <div className="flex space-x-2">
           {!isEditing && (
             <>
-              {job.link && (
+              {jobApplication.link && (
                 <AnimatedButton
                   icon={mdiWeb}
                   onClick={() =>
-                    window.open(job.link, "_blank", "noopener,noreferrer")
+                    window.open(jobApplication.link, "_blank", "noopener,noreferrer")
                   }
                   caption="Open job link"
                   captionPosition="left"
