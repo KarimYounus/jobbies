@@ -1,6 +1,7 @@
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, ipcMain } from "electron";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
+import { promises } from "fs";
 import path from "node:path";
 createRequire(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -30,6 +31,52 @@ function createWindow() {
     win.loadFile(path.join(RENDERER_DIST, "index.html"));
   }
 }
+function setupFileSystemIPC() {
+  const getDataFilePath = () => {
+    const userDataPath = app.getPath("userData");
+    console.log("User Data Path:", userDataPath);
+    return path.join(userDataPath, "job-applications.json");
+  };
+  ipcMain.handle("load-applications", async () => {
+    try {
+      const filePath = getDataFilePath();
+      const data = await promises.readFile(filePath, "utf-8");
+      return JSON.parse(data);
+    } catch (error) {
+      if (error.code === "ENOENT") {
+        return [];
+      }
+      console.error("Failed to load applications:", error);
+      throw error;
+    }
+  });
+  ipcMain.handle(
+    "save-applications",
+    async (event, applications) => {
+      try {
+        const filePath = getDataFilePath();
+        const data = JSON.stringify(applications, null, 2);
+        await promises.writeFile(filePath, data, "utf-8");
+      } catch (error) {
+        console.error("Failed to save applications:", error);
+        throw error;
+      }
+    }
+  );
+  ipcMain.handle("check-data-file", async () => {
+    try {
+      const filePath = getDataFilePath();
+      await promises.access(filePath);
+      return true;
+    } catch (error) {
+      if (error.code === "ENOENT") {
+        return false;
+      }
+      console.error("Error checking data file:", error);
+      throw error;
+    }
+  });
+}
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
@@ -41,7 +88,10 @@ app.on("activate", () => {
     createWindow();
   }
 });
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  createWindow();
+  setupFileSystemIPC();
+});
 export {
   MAIN_DIST,
   RENDERER_DIST,

@@ -2,9 +2,64 @@ import AnimatedButton from "./components/AnimatedButton";
 import { motion } from "motion/react";
 import JobList from "./components/JobList";
 import { mdiNotePlusOutline } from "@mdi/js";
-import { applicationsByStatus } from "./data/CollectionHandler";
+import { collectionHandler } from "./data/CollectionHandler";
+import { useEffect, useState } from "react";
+import { JobApplication } from "./types/job-application-types";
 
 function App() {
+  // State to hold the applications grouped by status
+  const [applicationsByStatus, setApplicationsByStatus] = useState<Map<string, JobApplication[]>>(new Map());
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Initialize the collection handler and set up event listeners
+  useEffect(() => {
+    const initializeData = async () => {
+      try {
+        await collectionHandler.initialize();
+        setApplicationsByStatus(collectionHandler.getApplicationsByStatus());
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Failed to initialize data:', error);
+        setIsLoading(false);
+      }
+    };
+
+    // Event listeners for data changes to keep UI reactive
+    const handleDataChange = () => {
+      setApplicationsByStatus(collectionHandler.getApplicationsByStatus());
+    };
+
+    collectionHandler.addEventListener('applications-loaded', handleDataChange);
+    collectionHandler.addEventListener('application-added', handleDataChange);
+    collectionHandler.addEventListener('application-updated', handleDataChange);
+    collectionHandler.addEventListener('application-deleted', handleDataChange);
+
+    initializeData();
+
+    // Cleanup event listeners on component unmount
+    return () => {
+      collectionHandler.removeEventListener('applications-loaded', handleDataChange);
+      collectionHandler.removeEventListener('application-added', handleDataChange);
+      collectionHandler.removeEventListener('application-updated', handleDataChange);
+      collectionHandler.removeEventListener('application-deleted', handleDataChange);
+    };
+  }, []);
+
+  // Show loading state while data is being initialized
+  if (isLoading) {
+    return (
+      <motion.div className="flex flex-col w-full justify-center items-center font-ivysoft">
+        <motion.div 
+          className="text-center text-white mt-8"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <p className="text-xl">Loading Applications...</p>
+        </motion.div>
+      </motion.div>
+    );
+  }
   return (
     <motion.div className="flex flex-col w-full justify-center items-center font-ivysoft">
       {/* Header Section */}

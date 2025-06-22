@@ -20,3 +20,9 @@ electron.contextBridge.exposeInMainWorld("ipcRenderer", {
   // You can expose other APTs you need here.
   // ...
 });
+electron.contextBridge.exposeInMainWorld("electronAPI", {
+  // File system operations
+  loadApplications: () => electron.ipcRenderer.invoke("load-applications"),
+  saveApplications: (applications) => electron.ipcRenderer.invoke("save-applications", applications),
+  checkDataFile: () => electron.ipcRenderer.invoke("check-data-file")
+});

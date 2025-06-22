@@ -21,4 +21,24 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
 
   // You can expose other APTs you need here.
   // ...
-})
+});
+
+contextBridge.exposeInMainWorld('electronAPI', {
+  // File system operations
+  loadApplications: () => ipcRenderer.invoke('load-applications'),
+  saveApplications: (applications: any[]) => ipcRenderer.invoke('save-applications', applications),
+  checkDataFile: () => ipcRenderer.invoke('check-data-file'),
+});
+
+// Type definitions for the exposed API
+export interface ElectronAPI {
+  loadApplications: () => Promise<any[]>;
+  saveApplications: (applications: any[]) => Promise<void>;
+  checkDataFile: () => Promise<boolean>;
+}
+
+declare global {
+  interface Window {
+    electronAPI?: ElectronAPI;
+  }
+}
