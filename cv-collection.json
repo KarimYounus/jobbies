@@ -1,0 +1,18 @@
+[
+  {
+    "id": "cv1",
+    "name": "Standard Tech CV",
+    "imagePreviewPath": "src/assets/images/cv.png",
+    "pdfPath": "src/assets/images/cv.png",
+    "date": "2025-05-20",
+    "notes": "General purpose CV for software engineering roles."
+  },
+  {
+    "id": "cv2",
+    "name": "Design CV",
+    "imagePreviewPath": "src/assets/images/design-cv.png",
+    "pdfPath": "src/assets/images/design-cv.png",
+    "date": "2025-06-10",
+    "notes": "Tailored CV for UI/UX design positions, highlighting design skills and portfolio."
+  }
+]

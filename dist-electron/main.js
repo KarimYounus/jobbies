@@ -31,7 +31,7 @@ function createWindow() {
     win.loadFile(path.join(RENDERER_DIST, "index.html"));
   }
 }
-function setupFileSystemIPC() {
+function setupApplicationHandlerIPC() {
   const getDataFilePath = () => {
     const userDataPath = app.getPath("userData");
     return path.join(userDataPath, "job-applications.json");
@@ -76,6 +76,106 @@ function setupFileSystemIPC() {
     }
   });
 }
+function setupCVHandlerIPC() {
+  const getCVDataFilePath = () => {
+    const userDataPath = app.getPath("userData");
+    return path.join(userDataPath, "cv-collection.json");
+  };
+  ipcMain.handle("load-cvs", async () => {
+    try {
+      const filePath = getCVDataFilePath();
+      const data = await promises.readFile(filePath, "utf-8");
+      return JSON.parse(data);
+    } catch (error) {
+      if (error.code === "ENOENT") {
+        return [];
+      }
+      console.error("Failed to load CVs:", error);
+      throw error;
+    }
+  });
+  ipcMain.handle(
+    "save-cvs",
+    async (event, cvs) => {
+      try {
+        const filePath = getCVDataFilePath();
+        await promises.mkdir(path.dirname(filePath), { recursive: true });
+        const data = JSON.stringify(cvs, null, 2);
+        await promises.writeFile(filePath, data, "utf-8");
+      } catch (error) {
+        console.error("Failed to save CVs:", error);
+        throw error;
+      }
+    }
+  );
+  ipcMain.handle("check-cv-data-file", async () => {
+    try {
+      const filePath = getCVDataFilePath();
+      await promises.access(filePath);
+      return true;
+    } catch (error) {
+      if (error.code === "ENOENT") {
+        return false;
+      }
+      console.error("Error checking CV data file:", error);
+      throw error;
+    }
+  });
+  const getCVAssetsPath = (subdir = "") => {
+    const userDataPath = app.getPath("userData");
+    return path.join(userDataPath, "cv-assets", subdir);
+  };
+  const generateUniqueFilename = (originalName) => {
+    const extension = path.extname(originalName);
+    const baseName = path.basename(originalName, extension);
+    const timestamp = Date.now();
+    const randomSuffix = Math.random().toString(36).substring(2, 8);
+    return `${baseName}_${timestamp}_${randomSuffix}${extension}`;
+  };
+  ipcMain.handle("ensure-cv-assets", async () => {
+    try {
+      const imagesPath = getCVAssetsPath("images");
+      const pdfsPath = getCVAssetsPath("pdfs");
+      await promises.mkdir(imagesPath, { recursive: true });
+      await promises.mkdir(pdfsPath, { recursive: true });
+    } catch (error) {
+      console.error("Failed to create CV assets directories:", error);
+      throw error;
+    }
+  });
+  ipcMain.handle(
+    "save-cv-image",
+    async (_, fileName, fileBuffer) => {
+      try {
+        const imagesPath = getCVAssetsPath("images");
+        await promises.mkdir(imagesPath, { recursive: true });
+        const uniqueName = generateUniqueFilename(fileName);
+        const targetPath = getCVAssetsPath(path.join("images", uniqueName));
+        await promises.writeFile(targetPath, Buffer.from(fileBuffer));
+        return path.join("cv-assets", "images", uniqueName);
+      } catch (error) {
+        console.error("Failed to save CV image:", error);
+        throw new Error(`Failed to save image: ${error}`);
+      }
+    }
+  );
+  ipcMain.handle(
+    "save-cv-pdf",
+    async (_, fileName, fileBuffer) => {
+      try {
+        const pdfsPath = getCVAssetsPath("pdfs");
+        await promises.mkdir(pdfsPath, { recursive: true });
+        const uniqueName = generateUniqueFilename(fileName);
+        const targetPath = getCVAssetsPath(path.join("pdfs", uniqueName));
+        await promises.writeFile(targetPath, Buffer.from(fileBuffer));
+        return path.join("cv-assets", "pdfs", uniqueName);
+      } catch (error) {
+        console.error("Failed to save CV PDF:", error);
+        throw new Error(`Failed to save PDF: ${error}`);
+      }
+    }
+  );
+}
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
@@ -89,7 +189,8 @@ app.on("activate", () => {
 });
 app.whenReady().then(() => {
   createWindow();
-  setupFileSystemIPC();
+  setupApplicationHandlerIPC();
+  setupCVHandlerIPC();
 });
 export {
   MAIN_DIST,

@@ -21,6 +21,7 @@ function CvImage(cv: CurriculumVitae | undefined) {
       {/* CV Image */}
       <div className="relative z-5">
         <motion.img
+          // src={cv?.imagePreviewPath}
           src="src/assets/images/cv.png"
           alt="CV Preview"
           className="h-full max-h-[39vh] rounded-md object-cover shadow-2xl border border-gray-200 cursor-pointer hover:shadow-3xl transition-shadow"
@@ -42,12 +43,7 @@ function CvImage(cv: CurriculumVitae | undefined) {
 
       {/* CV Expanded View Modal */}
       <AnimatePresence>
-        {cvView && (
-          <FullscreenCV
-            imagePath={cv.imagePreviewPath || "src/assets/images/cv.png"}
-            setIsExpanded={setCVView}
-          />
-        )}
+        {cvView && <FullscreenCV cv={cv} setIsExpanded={setCVView} />}
       </AnimatePresence>
     </>
   );
@@ -56,10 +52,10 @@ function CvImage(cv: CurriculumVitae | undefined) {
 export default CvImage;
 
 export function FullscreenCV({
-  imagePath,
+  cv,
   setIsExpanded,
 }: {
-  imagePath: string;
+  cv: CurriculumVitae | undefined;
   setIsExpanded: (isExpanded: boolean) => void;
 }) {
   return (
@@ -77,24 +73,44 @@ export function FullscreenCV({
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.5, opacity: 0 }}
         transition={{ duration: 0.4, ease: [0.85, 0, 0.15, 1] }}
-        className="relative max-w-[70vw] max-h-[80vh] flex items-center justify-center"
+        className="relative h-full flex flex-col items-center justify-center p-12"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close button */}
-        <AnimatedButton
+        {/* <AnimatedButton
           icon={mdiClose}
           onClick={() => setIsExpanded(false)}
           caption="Close"
           className="absolute top-4 left-[70vh] p-2 bg-white bg-opacity-70 rounded-full shadow-lg hover:bg-opacity-90 transition-colors cursor-pointer"
           iconClassName="text-gray-800"
-        />
+        /> */}
+
+        {/* CV Title */}
+        <motion.div className="flex w-full justify-between items-center py-4"> 
+          <motion.h2
+            className="text-2xl font-semibold text-white"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+          >
+            {cv?.name || "Curriculum Vitae"}
+          </motion.h2>
+          <AnimatedButton
+            icon={mdiClose}
+            onClick={() => setIsExpanded(false)}
+            caption="Close"
+            className="p-2 bg-white bg-opacity-70 rounded-full shadow-lg hover:bg-yellow-100 transition-colors cursor-pointer"
+            iconClassName="text-gray-800"
+          />
+        </motion.div>
 
         {/* Expanded CV Image */}
         <motion.img
-          src={imagePath}
+          // src={cv?.imagePreviewPath}
+          src="src/assets/images/cv.png"
           alt="CV Full View"
-          className="max-w-full max-h-[95vh] object-contain rounded-lg shadow-2xl"
-          layoutId="cv-image" // This creates a smooth transition between states
+          className="h-full object-contain rounded-lg shadow-2xl"
+          layoutId="cv-image"
         />
       </motion.div>
     </motion.div>

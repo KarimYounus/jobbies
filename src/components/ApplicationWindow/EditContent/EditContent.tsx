@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { CurriculumVitae } from "../../../types/job-application-types";
 import { ApplicationWindowContext } from "../ApplicationWindow";
-import EditCV from "./EditCV";
+import EditCV from "./CV/EditCV";
 import EditQuestions from "./EditQuestions";
 import EditTextArea from "./EditTextArea";
 import EditTextField from "./EditTextField";

@@ -54,7 +54,9 @@ function createWindow() {
   }
 }
 
-function setupFileSystemIPC() {
+function setupApplicationHandlerIPC() {
+  // Job Application IPC Handlers
+
   // Define the data file path inside the app's user data directory
   const getDataFilePath = () => {
     const userDataPath = app.getPath("userData");
@@ -92,7 +94,6 @@ function setupFileSystemIPC() {
       }
     }
   );
-
   // IPC Handler: Check if the data file exists
   ipcMain.handle("check-data-file", async (): Promise<boolean> => {
     try {
@@ -109,6 +110,143 @@ function setupFileSystemIPC() {
       throw error;
     }
   });
+}
+
+function setupCVHandlerIPC() {
+  // CV Collection IPC Handlers
+  const getCVDataFilePath = () => {
+    const userDataPath = app.getPath("userData");
+    return path.join(userDataPath, "cv-collection.json");
+  };
+
+  // IPC Handler: Load CVs from the JSON file
+  ipcMain.handle("load-cvs", async (): Promise<any[]> => {
+    try {
+      const filePath = getCVDataFilePath();
+      const data = await fs.readFile(filePath, "utf-8");
+      return JSON.parse(data);
+    } catch (error) {
+      // Case: File not found or empty
+      if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+        return []; // Return empty array if file does not exist
+      }
+      // Case: Other read errors
+      console.error("Failed to load CVs:", error);
+      throw error;
+    }
+  });
+
+  // IPC Handler: Save CVs to the JSON file
+  ipcMain.handle(
+    "save-cvs",
+    async (event, cvs: any[]): Promise<void> => {
+      try {
+        const filePath = getCVDataFilePath();
+        
+        // Ensure the directory exists before writing
+        await fs.mkdir(path.dirname(filePath), { recursive: true });
+        
+        const data = JSON.stringify(cvs, null, 2);
+        await fs.writeFile(filePath, data, "utf-8");
+      } catch (error) {
+        console.error("Failed to save CVs:", error);
+        throw error;
+      }
+    }
+  );
+  // IPC Handler: Check if the CV data file exists
+  ipcMain.handle("check-cv-data-file", async (): Promise<boolean> => {
+    try {
+      const filePath = getCVDataFilePath();
+      await fs.access(filePath);
+      return true; // File exists
+    } catch (error) {
+      // If the file does not exist, return false
+      if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+        return false;
+      }
+      // For other errors, log and rethrow
+      console.error("Error checking CV data file:", error);
+      throw error;
+    }
+  });
+
+  // CV Asset Management IPC Handlers
+  const getCVAssetsPath = (subdir: string = '') => {
+    const userDataPath = app.getPath("userData");
+    return path.join(userDataPath, "cv-assets", subdir);
+  };
+
+  const generateUniqueFilename = (originalName: string): string => {
+    const extension = path.extname(originalName);
+    const baseName = path.basename(originalName, extension);
+    const timestamp = Date.now();
+    const randomSuffix = Math.random().toString(36).substring(2, 8);
+    return `${baseName}_${timestamp}_${randomSuffix}${extension}`;
+  };
+
+  // IPC Handler: Ensure CV assets directory structure exists
+  ipcMain.handle("ensure-cv-assets", async (): Promise<void> => {
+    try {
+      const imagesPath = getCVAssetsPath("images");
+      const pdfsPath = getCVAssetsPath("pdfs");
+      
+      await fs.mkdir(imagesPath, { recursive: true });
+      await fs.mkdir(pdfsPath, { recursive: true });
+    } catch (error) {
+      console.error("Failed to create CV assets directories:", error);
+      throw error;
+    }
+  });
+  // IPC Handler: Save image file to cv-assets/images/
+  ipcMain.handle(
+    "save-cv-image",
+    async (_, fileName: string, fileBuffer: ArrayBuffer): Promise<string> => {
+      try {
+        // Ensure assets directory exists
+        const imagesPath = getCVAssetsPath("images");
+        await fs.mkdir(imagesPath, { recursive: true });
+
+        // Generate unique filename to prevent conflicts
+        const uniqueName = generateUniqueFilename(fileName);
+        const targetPath = getCVAssetsPath(path.join("images", uniqueName));
+
+        // Write file to cv-assets/images/
+        await fs.writeFile(targetPath, Buffer.from(fileBuffer));
+
+        // Return path relative to userData for storage in CV object
+        return path.join("cv-assets", "images", uniqueName);
+      } catch (error) {
+        console.error("Failed to save CV image:", error);
+        throw new Error(`Failed to save image: ${error}`);
+      }
+    }
+  );
+
+  // IPC Handler: Save PDF file to cv-assets/pdfs/
+  ipcMain.handle(
+    "save-cv-pdf",
+    async (_, fileName: string, fileBuffer: ArrayBuffer): Promise<string> => {
+      try {
+        // Ensure assets directory exists
+        const pdfsPath = getCVAssetsPath("pdfs");
+        await fs.mkdir(pdfsPath, { recursive: true });
+
+        // Generate unique filename to prevent conflicts
+        const uniqueName = generateUniqueFilename(fileName);
+        const targetPath = getCVAssetsPath(path.join("pdfs", uniqueName));
+
+        // Write file to cv-assets/pdfs/
+        await fs.writeFile(targetPath, Buffer.from(fileBuffer));
+
+        // Return path relative to userData for storage in CV object
+        return path.join("cv-assets", "pdfs", uniqueName);
+      } catch (error) {
+        console.error("Failed to save CV PDF:", error);
+        throw new Error(`Failed to save PDF: ${error}`);
+      }
+    }
+  );
 }
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -131,5 +269,6 @@ app.on("activate", () => {
 
 app.whenReady().then(() => {
   createWindow();
-  setupFileSystemIPC();
+  setupApplicationHandlerIPC();
+  setupCVHandlerIPC();
 });

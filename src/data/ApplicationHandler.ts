@@ -1,13 +1,12 @@
 import { JobApplication } from "../types/job-application-types";
 import { applicationCollection } from "./application-collection";
 import { defaultStatusItems, StatusItem } from "../types/status-types";
-import { stat } from "original-fs";
 
 /**
  * Events emitted by the CollectionHandler for UI reactivity.
  * Components can listen to these events to update their state when data changes.
  */
-export type CollectionHandlerEvent =
+export type ApplicationHandlerEvent =
   | "applications-loaded"
   | "application-added"
   | "application-updated"
@@ -27,8 +26,8 @@ export type CollectionHandlerEvent =
  * - Separate private methods for file operations maintain clean separation of concerns
  * - Graceful error handling with fallback to in-memory data prevents app crashes
  */
-export class CollectionHandler extends EventTarget {
-  private static instance: CollectionHandler | null = null;
+export class ApplicationHandler extends EventTarget {
+  private static instance: ApplicationHandler | null = null;
   private applications: JobApplication[] = [];
   private applicationsByStatus: Map<StatusItem, JobApplication[]> = new Map();
   private readonly dataFilePath: string;
@@ -47,11 +46,11 @@ export class CollectionHandler extends EventTarget {
    * Gets the singleton instance of CollectionHandler.
    * Creates a new instance if none exists.
    */
-  public static getInstance(dataFilePath?: string): CollectionHandler {
-    if (!CollectionHandler.instance) {
-      CollectionHandler.instance = new CollectionHandler(dataFilePath);
+  public static getInstance(dataFilePath?: string): ApplicationHandler {
+    if (!ApplicationHandler.instance) {
+      ApplicationHandler.instance = new ApplicationHandler(dataFilePath);
     }
-    return CollectionHandler.instance;
+    return ApplicationHandler.instance;
   }
 
   /**
@@ -315,7 +314,7 @@ export class CollectionHandler extends EventTarget {
  * Export a singleton instance for immediate use.
  * This maintains backward compatibility with the existing export pattern.
  */
-const collectionHandler = CollectionHandler.getInstance();
+const collectionHandler = ApplicationHandler.getInstance();
 
 /**
  * Backward compatibility export.

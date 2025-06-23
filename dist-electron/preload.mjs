@@ -21,8 +21,16 @@ electron.contextBridge.exposeInMainWorld("ipcRenderer", {
   // ...
 });
 electron.contextBridge.exposeInMainWorld("electronAPI", {
-  // File system operations
+  // Job application operations
   loadApplications: () => electron.ipcRenderer.invoke("load-applications"),
   saveApplications: (applications) => electron.ipcRenderer.invoke("save-applications", applications),
-  checkDataFile: () => electron.ipcRenderer.invoke("check-data-file")
+  checkDataFile: () => electron.ipcRenderer.invoke("check-data-file"),
+  // CV collection operations
+  loadCVs: () => electron.ipcRenderer.invoke("load-cvs"),
+  saveCVs: (cvs) => electron.ipcRenderer.invoke("save-cvs", cvs),
+  checkCVDataFile: () => electron.ipcRenderer.invoke("check-cv-data-file"),
+  // CV asset operations
+  ensureCVAssets: () => electron.ipcRenderer.invoke("ensure-cv-assets"),
+  saveImageFile: (fileName, fileBuffer) => electron.ipcRenderer.invoke("save-cv-image", fileName, fileBuffer),
+  savePDFFile: (fileName, fileBuffer) => electron.ipcRenderer.invoke("save-cv-pdf", fileName, fileBuffer)
 });

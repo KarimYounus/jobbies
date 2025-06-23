@@ -5,7 +5,7 @@ import EditContent from "./EditContent/EditContent";
 import ConfirmationDialog from "../General/ConfirmationDialog";
 import { motion, AnimatePresence } from "framer-motion";
 import { JobApplication } from "../../types/job-application-types";
-import { collectionHandler } from "../../data/CollectionHandler";
+import { collectionHandler } from "../../data/ApplicationHandler";
 import { StatusItem } from "../../types/status-types";
 
 interface ApplicationWindowProps {

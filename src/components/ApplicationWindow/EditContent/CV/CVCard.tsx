@@ -1,9 +1,9 @@
 import React from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { CurriculumVitae } from "../../../types/job-application-types";
-import AnimatedButton from "../../General/AnimatedButton";
+import { CurriculumVitae } from "../../../../types/job-application-types";
+import AnimatedButton from "../../../General/AnimatedButton";
 import { mdiMagnifyExpand } from "@mdi/js";
-import { FullscreenCV } from "../ViewContent/CVImage";
+import { FullscreenCV } from "../../ViewContent/CVImage";
 
 interface CVCardProps {
   cv: CurriculumVitae;
@@ -57,7 +57,7 @@ const CVCard: React.FC<CVCardProps> = ({ cv, onSelect, isSelected }) => {
       <AnimatePresence>
         {isExpanded && (
           <FullscreenCV
-            imagePath={cv.imagePreviewPath || "src/assets/images/cv.png"}
+            cv={cv}
             setIsExpanded={setIsExpanded}
           />
         )}

@@ -1,6 +1,6 @@
 import { JobApplication} from "../types/job-application-types";
 import { getStatusByText, defaultStatusItems } from "../types/status-types";
-import { cvCollection } from "./cv/cv-collection";
+import { cvCollection } from "./cv-collection";
 
 export const applicationCollection: JobApplication[] = [
   {

@@ -2,7 +2,7 @@ import AnimatedButton from "./components/General/AnimatedButton";
 import { motion } from "motion/react";
 import JobList from "./components/JobList";
 import { mdiNotePlusOutline } from "@mdi/js";
-import { collectionHandler } from "./data/CollectionHandler";
+import { collectionHandler } from "./data/ApplicationHandler";
 import { useEffect, useState } from "react";
 import { JobApplication } from "./types/job-application-types";
 import ApplicationWindow from "./components/ApplicationWindow/ApplicationWindow";

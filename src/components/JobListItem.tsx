@@ -27,7 +27,7 @@ const JobListItem: React.FC<JobListItemProps> = ({
         onClick?.(job);
       }}
       // style={{ backgroundColor: "rgba(219, 255, 246, 1.0)" }}
-      className="py-4 rounded-xl shadow-md hover:shadow-lg transition-shadow font-ivysoft bg-gray-50"
+      className="py-4 rounded-xl shadow-md hover:shadow-lg transition-shadow font-ivysoft bg-white"
     >
       <div className="flex justify-between items-center px-6">
         <div className="flex flex-col gap-1 justify-center items-start text-xl font-semibold">
