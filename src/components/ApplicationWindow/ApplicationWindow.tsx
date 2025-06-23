@@ -12,18 +12,18 @@ interface ApplicationWindowProps {
   jobApplication: JobApplication | null;
   isOpen: boolean;
   onClose: () => void;
-  createNew?: boolean; // Renamed from edit, indicates this is a new application
+  createNew?: boolean; // indicates this is a new application
 }
 
 interface ApplicationWindowContextType {
-  jobApplication?: JobApplication | null; 
+  jobApplication?: JobApplication | null;
   setJobApplication: (job: JobApplication) => void;
   isEditing: boolean;
   setIsEditing: (isEditing: boolean) => void;
   onStatusChange?: (newStatus: StatusItem) => void;
   updateField: (field: keyof JobApplication, value: any) => void;
-  isSaving?: boolean; 
-  error?: string | null; 
+  isSaving?: boolean;
+  error?: string | null;
 }
 
 export const ApplicationWindowContext =
@@ -39,18 +39,28 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
   jobApplication: job,
   isOpen,
   onClose,
-  createNew = false, // Renamed from edit
+  createNew = false,
 }) => {
-  if (!job) return null;  const [jobApplication, setJobApplication] = useState<JobApplication | null>(job);
-  const [isEditing, setIsEditing] = useState(createNew); // Set initial editing state based on createNew flag
+  if (!job) return null;
+  const [jobApplication, setJobApplication] = useState<JobApplication | null>(
+    job
+  );
+  const [isEditing, setIsEditing] = useState(createNew);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Dialog state management
-  const [showUnsavedChangesDialog, setShowUnsavedChangesDialog] = useState(false);
-  const [showRequiredFieldsDialog, setShowRequiredFieldsDialog] = useState(false);
+  const [showUnsavedChangesDialog, setShowUnsavedChangesDialog] =
+    useState(false);
+  const [showRequiredFieldsDialog, setShowRequiredFieldsDialog] =
+    useState(false);
+
+  // State to track unsaved changes and initial job state
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [initialJobState, setInitialJobState] = useState<JobApplication | null>(job);
+  const [initialJobState, setInitialJobState] = useState<JobApplication | null>(
+    job
+  );
+
   useEffect(() => {
     setJobApplication(job);
     setInitialJobState(job);
@@ -58,20 +68,25 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
   }, [job]);
 
   // Helper function to check for required fields
-  const validateRequiredFields = (application: JobApplication | null): string[] => {
+  const validateRequiredFields = (
+    application: JobApplication | null
+  ): string[] => {
     if (!application) return [];
-    
+
     const missingFields: string[] = [];
-    if (!application.company?.trim()) missingFields.push('Company Name');
-    if (!application.position?.trim()) missingFields.push('Position Title');
-    
+    if (!application.company?.trim()) missingFields.push("Company Name");
+    if (!application.position?.trim()) missingFields.push("Position Title");
+
     return missingFields;
   };
 
   // Helper function to detect changes
-  const detectChanges = (current: JobApplication | null, initial: JobApplication | null): boolean => {
+  const detectChanges = (
+    current: JobApplication | null,
+    initial: JobApplication | null
+  ): boolean => {
     if (!current || !initial) return false;
-    
+
     // Compare key fields that indicate meaningful changes
     return (
       current.company !== initial.company ||
@@ -85,20 +100,22 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
       current.status.text !== initial.status.text
     );
   };
+
   // Field update method for application data edits
   // This method updates a specific field in the job application state and tracks changes
   const updateField = (field: keyof JobApplication, value: any) => {
-    setJobApplication(prev => {
+    setJobApplication((prev) => {
       if (!prev) return null;
-      
+
       const updated = { ...prev, [field]: value };
-      
+
       // Update change tracking
       setHasUnsavedChanges(detectChanges(updated, initialJobState));
-      
+
       return updated;
     });
   };
+
   // Enhanced close handler with unsaved changes detection
   const handleCloseWithConfirmation = () => {
     if (isEditing && hasUnsavedChanges) {
@@ -117,22 +134,25 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
 
   // Separate handler for status changes
   // This method handles status changes and saves the updated application immediately
-  // Only works for existing applications, not new ones being created
   const handleStatusChange = async (newStatus: StatusItem) => {
     if (!jobApplication || createNew) return; // Don't auto-save status changes for new applications
 
     try {
       const updatedJob = { ...jobApplication, status: newStatus };
-      
+
       // Save immediately via CollectionHandler
       await collectionHandler.updateApplication(updatedJob);
-      
+
       // Update local state
       setJobApplication(updatedJob);
     } catch (err) {
-      setError(`Failed to update status: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      setError(
+        `Failed to update status: ${
+          err instanceof Error ? err.message : "Unknown error"
+        }`
+      );
     }
-  };  // Explicit save for form edits (EditContent) with validation
+  }; // Explicit save for form edits (EditContent) with validation
   const handleSave = async () => {
     if (!jobApplication) return;
 
@@ -149,19 +169,25 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
 
       if (createNew) {
         // Creating a new application - use addApplication
-        const savedApplication = await collectionHandler.addApplication(jobApplication);
+        const savedApplication = await collectionHandler.addApplication(
+          jobApplication
+        );
         setJobApplication(savedApplication);
         setInitialJobState(savedApplication);
       } else {
-        // Updating existing application - use updateApplication  
+        // Updating existing application - use updateApplication
         await collectionHandler.updateApplication(jobApplication);
         setInitialJobState(jobApplication);
       }
-      
+
       setHasUnsavedChanges(false);
       setIsEditing(false);
     } catch (err) {
-      setError(`Failed to save: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      setError(
+        `Failed to save: ${
+          err instanceof Error ? err.message : "Unknown error"
+        }`
+      );
     } finally {
       setIsSaving(false);
     }
@@ -184,20 +210,24 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
       await collectionHandler.deleteApplication(jobApplication.id);
       onClose(); // Close window after successful deletion
     } catch (err) {
-      setError(`Failed to delete: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      setError(
+        `Failed to delete: ${
+          err instanceof Error ? err.message : "Unknown error"
+        }`
+      );
     }
   };
   return (
     <ApplicationWindowContext.Provider
-      value={{ 
-        jobApplication, 
-        setJobApplication, 
-        isEditing, 
+      value={{
+        jobApplication,
+        setJobApplication,
+        isEditing,
         setIsEditing,
         updateField,
         onStatusChange: handleStatusChange,
         isSaving,
-        error
+        error,
       }}
     >
       <AnimatePresence>
@@ -209,7 +239,9 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
             transition={{ duration: 0.2 }}
             className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
           >
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl h-full max-h-[90vh] flex flex-col mx-4">              {jobApplication && (
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl h-full max-h-[90vh] flex flex-col mx-4">
+              {" "}
+              {jobApplication && (
                 <Header
                   onClose={handleCloseWithConfirmation}
                   onSave={handleSave}
@@ -217,13 +249,10 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
                 />
               )}
               <div className="flex-grow overflow-y-auto">
-                {isEditing ? (
-                  <EditContent />
-                ) : (
-                  <ViewContent />
-                )}
+                {isEditing ? <EditContent /> : <ViewContent />}
               </div>
-            </div>          </motion.div>
+            </div>{" "}
+          </motion.div>
         )}
       </AnimatePresence>
 
@@ -236,12 +265,13 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
         primaryButton={{
           text: "Save & Close",
           onClick: handleSaveAndClose,
-          disabled: isSaving
+          disabled: isSaving,
         }}
         secondaryButton={{
           text: "Discard Changes",
           onClick: handleDiscardChanges,
-          className: "bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-colors font-medium"
+          className:
+            "bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-colors font-medium",
         }}
       />
 
@@ -252,17 +282,19 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
         onClose={() => setShowRequiredFieldsDialog(false)}
         primaryButton={{
           text: "Continue Editing",
-          onClick: () => setShowRequiredFieldsDialog(false)
+          onClick: () => setShowRequiredFieldsDialog(false),
         }}
         secondaryButton={{
           text: "Cancel",
-          onClick: () => setShowRequiredFieldsDialog(false)
+          onClick: () => setShowRequiredFieldsDialog(false),
         }}
       >
         <div className="space-y-2">
-          <p className="text-gray-600 text-sm">The following fields are required:</p>
+          <p className="text-gray-600 text-sm">
+            The following fields are required:
+          </p>
           <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
-            {validateRequiredFields(jobApplication).map(field => (
+            {validateRequiredFields(jobApplication).map((field) => (
               <li key={field}>{field}</li>
             ))}
           </ul>

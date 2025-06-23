@@ -6,15 +6,18 @@ import { collectionHandler } from "./data/CollectionHandler";
 import { useEffect, useState } from "react";
 import { JobApplication } from "./types/job-application-types";
 import ApplicationWindow from "./components/ApplicationWindow/ApplicationWindow";
+import { StatusItem } from "./types/status-types";
 
 function App() {
   // State to hold the applications grouped by status
   const [applicationsByStatus, setApplicationsByStatus] = useState<
-    Map<string, JobApplication[]>
+    Map<StatusItem, JobApplication[]>
   >(new Map());
   const [isLoading, setIsLoading] = useState(true);
   const [isJobViewOpen, setIsJobViewOpen] = useState(false);
-  const [newApplication, setNewApplication] = useState<JobApplication | null>(null);
+  const [newApplication, setNewApplication] = useState<JobApplication | null>(
+    null
+  );
 
   // Handler for creating a new application
   const handleAddJobClick = () => {
@@ -106,7 +109,9 @@ function App() {
         />
 
         {/* Buttons */}
-        <motion.div className="flex gap-4 pr-5">          <AnimatedButton
+        <motion.div className="flex gap-4 pr-5">
+          {" "}
+          <AnimatedButton
             icon={mdiNotePlusOutline}
             caption="Add Job"
             className="p-2 mx-3 hover:bg-teal-200 rounded-lg transition-colors cursor-pointer"
@@ -115,7 +120,6 @@ function App() {
           />
         </motion.div>
       </motion.div>
-
       {/* Main Content Section - Job Lists */}
       <motion.div className="flex flex-col items-center w-full gap-4 px-4 mt-2">
         {applicationsByStatus.size === 0 ? (
@@ -126,18 +130,17 @@ function App() {
             transition={{ duration: 0.5 }}
           >
             <p className="text-white text-xl">No Job Applications</p>
-            <p className="text-white text-sm mt-2">
-              Create a new application to see them here
-            </p>
+            <p className="text-white text-sm mt-2">Create a new application to see them here</p>
           </motion.div>
         ) : (
           Array.from(applicationsByStatus.entries()).map(
             ([status, applications]) => (
-              <JobList key={status} title={status} items={applications} />
+              <JobList key={status.text} status={status} items={applications} />
             )
           )
         )}
-      </motion.div>      <ApplicationWindow
+      </motion.div>
+      <ApplicationWindow
         isOpen={isJobViewOpen}
         onClose={() => setIsJobViewOpen(false)}
         jobApplication={newApplication}

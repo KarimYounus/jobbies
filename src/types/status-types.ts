@@ -13,8 +13,8 @@ export const defaultStatusItems: StatusItem[] = [
   { text: "Assessment Stage", color: "#168aad" },
   { text: "Interview Stage", color: "#76c893" },
   { text: "Offer", color: "#abff4f" },
-  { text: "Rejected", color: "#ef233c" },
   { text: "No Response", color: "#F05D23" },
+  { text: "Rejected", color: "#ef233c" },
 ];
 
 // Helper function to get status item by text (identifier)
