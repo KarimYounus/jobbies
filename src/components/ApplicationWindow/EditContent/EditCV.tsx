@@ -3,7 +3,7 @@ import { CurriculumVitae } from "../../../types/job-application-types";
 import { cvCollection as initialCVs } from "../../../data/cv/cv-collection";
 import CVCard from "./CVCard";
 import CreateNewCV from "./CreateNewCV";
-import AnimatedButton from "../../AnimatedButton";
+import AnimatedButton from "../../General/AnimatedButton";
 import { mdiCloseCircle, mdiTextBoxPlus } from "@mdi/js";
 
 interface EditCVProps {

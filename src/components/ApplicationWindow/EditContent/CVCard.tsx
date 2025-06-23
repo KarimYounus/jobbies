@@ -1,7 +1,7 @@
 import React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { CurriculumVitae } from "../../../types/job-application-types";
-import AnimatedButton from "../../AnimatedButton";
+import AnimatedButton from "../../General/AnimatedButton";
 import { mdiMagnifyExpand } from "@mdi/js";
 import { FullscreenCV } from "../ViewContent/CVImage";
 

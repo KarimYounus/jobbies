@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { CurriculumVitae } from "../../../types/job-application-types";
 import EditTextField from "./EditTextField";
 import EditTextArea from "./EditTextArea";
-import AnimatedButton from "../../AnimatedButton";
+import AnimatedButton from "../../General/AnimatedButton";
 import { mdiCloseCircle, mdiTextBoxCheck, mdiImage, mdiFilePdfBox } from "@mdi/js";
-import DropZone from "../../DropZone";
+import DropZone from "../../General/DropZone";
 
 interface CreateNewCVProps {
   onSave: (cv: CurriculumVitae) => void;

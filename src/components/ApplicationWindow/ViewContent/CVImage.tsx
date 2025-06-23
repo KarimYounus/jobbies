@@ -2,7 +2,7 @@ import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { mdiClose } from "@mdi/js";
 import { CurriculumVitae } from "../../../types/job-application-types";
-import AnimatedButton from "../../AnimatedButton";
+import AnimatedButton from "../../General/AnimatedButton";
 
 // Function to render CV image with modal view
 function CvImage(cv: CurriculumVitae | undefined) {

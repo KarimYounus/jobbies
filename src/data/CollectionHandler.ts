@@ -1,5 +1,6 @@
 import { JobApplication } from "../types/job-application-types";
 import { applicationCollection } from "./application-collection";
+import { defaultStatusItems } from "../types/status-types";
 
 /**
  * Events emitted by the CollectionHandler for UI reactivity.
@@ -80,6 +81,42 @@ export class CollectionHandler extends EventTarget {
   }
 
   /**
+   * Generates a unique ID for a new job application.
+   * Uses UUID v4 for guaranteed uniqueness across sessions.
+   */
+  private generateUniqueId(): string {
+    // Simple UUID v4 implementation
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      const r = Math.random() * 16 | 0;
+      const v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
+
+  /**
+   * Creates a new job application object with required fields and auto-generated ID.
+   * Useful for initializing forms or creating templates.
+   */
+  public createNewApplication(overrides: Partial<JobApplication> = {}): JobApplication {
+    const defaultApplication: JobApplication = {
+      id: this.generateUniqueId(),
+      company: '',
+      position: '',
+      status: defaultStatusItems[0],
+      appliedDate: new Date().toISOString().split('T')[0],
+      description: '',
+      salary: '',
+      location: '',
+      notes: '',
+      link: '',
+      questions: [],
+      ...overrides
+    };
+
+    return defaultApplication;
+  }
+
+  /**
    * Gets all applications grouped by status.
    * This is the primary method for UI components to access organized data.
    */
@@ -100,27 +137,31 @@ export class CollectionHandler extends EventTarget {
    */
   public getApplicationById(id: string): JobApplication | undefined {
     return this.applications.find(app => app.id === id);
-  }
-
-  /**
+  }  /**
    * Adds a new job application to the collection.
-   * Automatically persists to file and updates UI via events.
+   * Automatically generates ID if not provided and persists to file.
    */
-  public async addApplication(application: JobApplication): Promise<void> {
+  public async addApplication(application: Omit<JobApplication, 'id'> | JobApplication): Promise<JobApplication> {
+    // Auto-generate ID if not provided
+    const applicationWithId: JobApplication = 'id' in application && application.id 
+      ? application as JobApplication
+      : { ...application, id: this.generateUniqueId() };
+
     // Ensure unique ID to prevent conflicts
-    if (this.applications.some(app => app.id === application.id)) {
-      throw new Error(`Application with ID ${application.id} already exists`);
+    if (this.applications.some(app => app.id === applicationWithId.id)) {
+      throw new Error(`Application with ID ${applicationWithId.id} already exists`);
     }
 
-    this.applications.push(application);
+    this.applications.push(applicationWithId);
     this.rebuildStatusGroups();
     
     try {
       await this.saveApplicationsToFile();
-      this.dispatchEvent(new CustomEvent('application-added', { detail: application }));
+      this.dispatchEvent(new CustomEvent('application-added', { detail: applicationWithId }));
+      return applicationWithId;
     } catch (error) {
       // Rollback in-memory changes if persistence fails
-      this.applications = this.applications.filter(app => app.id !== application.id);
+      this.applications = this.applications.filter(app => app.id !== applicationWithId.id);
       this.rebuildStatusGroups();
       throw error;
     }

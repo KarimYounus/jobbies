@@ -10,7 +10,7 @@ import {
   mdiContentSave,
   mdiFileCancel
 } from "@mdi/js";
-import AnimatedButton from "../AnimatedButton";
+import AnimatedButton from "../General/AnimatedButton";
 import { ApplicationWindowContext } from "./ApplicationWindow";
 
 interface HeaderProps {

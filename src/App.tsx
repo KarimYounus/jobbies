@@ -1,4 +1,4 @@
-import AnimatedButton from "./components/AnimatedButton";
+import AnimatedButton from "./components/General/AnimatedButton";
 import { motion } from "motion/react";
 import JobList from "./components/JobList";
 import { mdiNotePlusOutline } from "@mdi/js";
@@ -6,8 +6,6 @@ import { collectionHandler } from "./data/CollectionHandler";
 import { useEffect, useState } from "react";
 import { JobApplication } from "./types/job-application-types";
 import ApplicationWindow from "./components/ApplicationWindow/ApplicationWindow";
-import { defaultStatusItems } from "./types/status-types";
-import { s } from "motion/react-client";
 
 function App() {
   // State to hold the applications grouped by status
@@ -16,19 +14,13 @@ function App() {
   >(new Map());
   const [isLoading, setIsLoading] = useState(true);
   const [isJobViewOpen, setIsJobViewOpen] = useState(false);
+  const [newApplication, setNewApplication] = useState<JobApplication | null>(null);
 
-  const newApplication: JobApplication = {
-    id: "",
-    company: "",
-    position: "",
-    description: "",
-    status: defaultStatusItems[0],
-    appliedDate: new Date().toISOString().split("T")[0],
-    salary: "",
-    location: "",
-    notes: "",
-    link: "",
-    questions: [],
+  // Handler for creating a new application
+  const handleAddJobClick = () => {
+    const freshApplication = collectionHandler.createNewApplication();
+    setNewApplication(freshApplication);
+    setIsJobViewOpen(true);
   };
 
   // Initialize the collection handler and set up event listeners
@@ -114,13 +106,12 @@ function App() {
         />
 
         {/* Buttons */}
-        <motion.div className="flex gap-4 pr-5">
-          <AnimatedButton
+        <motion.div className="flex gap-4 pr-5">          <AnimatedButton
             icon={mdiNotePlusOutline}
             caption="Add Job"
             className="p-2 mx-3 hover:bg-teal-200 rounded-lg transition-colors cursor-pointer"
             iconClassName="text-gray-200 hover:text-gray-800"
-            onClick={() => setIsJobViewOpen(true)}
+            onClick={handleAddJobClick}
           />
         </motion.div>
       </motion.div>
@@ -146,12 +137,11 @@ function App() {
             )
           )
         )}
-      </motion.div>
-      <ApplicationWindow
+      </motion.div>      <ApplicationWindow
         isOpen={isJobViewOpen}
         onClose={() => setIsJobViewOpen(false)}
         jobApplication={newApplication}
-        edit={true}
+        createNew={true}
       />
     </motion.div>
   );
