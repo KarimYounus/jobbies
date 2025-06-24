@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { JobApplication } from "../../types/job-application-types";
 import { collectionHandler } from "../../data/ApplicationHandler";
 import { StatusItem } from "../../types/status-types";
+import { s } from "motion/react-client";
 
 interface ApplicationWindowProps {
   jobApplication: JobApplication | null;
@@ -54,6 +55,7 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
     useState(false);
   const [showRequiredFieldsDialog, setShowRequiredFieldsDialog] =
     useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   // State to track unsaved changes and initial job state
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -203,9 +205,13 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
   };
 
   // Delete operation
+  const handleDeleteWithConfirmation = async () => {
+    setShowDeleteDialog(true);
+  };
+
+  // Handle delete and close
   const handleDeleteAndClose = async () => {
     if (!jobApplication) return;
-
     try {
       await collectionHandler.deleteApplication(jobApplication.id);
       onClose(); // Close window after successful deletion
@@ -216,7 +222,8 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
         }`
       );
     }
-  };
+  }
+
   return (
     <ApplicationWindowContext.Provider
       value={{
@@ -238,12 +245,14 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.2 }}
             className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-2xl"
-          >            <div className="rounded-lg shadow-xl w-full max-w-4xl h-full max-h-[90vh] flex flex-col mx-4 overflow-hidden">
+          >
+            {" "}
+            <div className="rounded-lg shadow-xl w-full max-w-4xl h-full max-h-[90vh] flex flex-col mx-4 overflow-hidden">
               {jobApplication && (
                 <Header
                   onClose={handleCloseWithConfirmation}
                   onSave={handleSave}
-                  onDelete={handleDeleteAndClose}
+                  onDelete={handleDeleteWithConfirmation}
                 />
               )}
               <div className="flex-grow overflow-y-auto bg-white rounded-b-lg pt-0 -mt-[17vh] no-scrollbar">
@@ -272,6 +281,25 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
           onClick: handleDiscardChanges,
           className:
             "bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-colors font-medium",
+        }}
+      />
+
+      {/* Confirm Delete Dialog */}
+      <ConfirmationDialog
+        isOpen={showDeleteDialog}
+        title="Delete Application"
+        message="Are you sure you want to delete this application? This action cannot be undone."
+        onClose={() => setShowDeleteDialog(false)}
+        primaryButton={{
+          text: "Cancel",
+          onClick: () => {
+            setShowDeleteDialog(false); },
+        }}
+        secondaryButton={{
+          text: "Delete",
+          onClick: () => handleCloseWithConfirmation(),
+          className:
+            "bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors font-medium",
         }}
       />
 

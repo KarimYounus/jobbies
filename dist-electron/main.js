@@ -13,8 +13,8 @@ process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 
 let win;
 function createWindow() {
   win = new BrowserWindow({
-    width: 800,
-    height: 800,
+    width: 910,
+    height: 1080,
     transparent: false,
     icon: path.join(process.env.VITE_PUBLIC, "Iocn.png"),
     title: "Jobbies",

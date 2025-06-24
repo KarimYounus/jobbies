@@ -31,8 +31,8 @@ let win: BrowserWindow | null;
 
 function createWindow() {
   win = new BrowserWindow({
-    width: 800,
-    height: 800,
+    width: 910,
+    height: 1080,
     transparent: false,
     icon: path.join(process.env.VITE_PUBLIC, "Iocn.png"),
     title: "Jobbies",
