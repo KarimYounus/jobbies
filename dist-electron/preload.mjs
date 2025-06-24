@@ -32,5 +32,6 @@ electron.contextBridge.exposeInMainWorld("electronAPI", {
   // CV asset operations
   ensureCVAssets: () => electron.ipcRenderer.invoke("ensure-cv-assets"),
   saveImageFile: (fileName, fileBuffer) => electron.ipcRenderer.invoke("save-cv-image", fileName, fileBuffer),
-  savePDFFile: (fileName, fileBuffer) => electron.ipcRenderer.invoke("save-cv-pdf", fileName, fileBuffer)
+  savePDFFile: (fileName, fileBuffer) => electron.ipcRenderer.invoke("save-cv-pdf", fileName, fileBuffer),
+  getCVImageUrl: (imagePath) => electron.ipcRenderer.invoke("get-cv-image-url", imagePath)
 });

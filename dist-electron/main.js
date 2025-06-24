@@ -94,20 +94,17 @@ function setupCVHandlerIPC() {
       throw error;
     }
   });
-  ipcMain.handle(
-    "save-cvs",
-    async (event, cvs) => {
-      try {
-        const filePath = getCVDataFilePath();
-        await promises.mkdir(path.dirname(filePath), { recursive: true });
-        const data = JSON.stringify(cvs, null, 2);
-        await promises.writeFile(filePath, data, "utf-8");
-      } catch (error) {
-        console.error("Failed to save CVs:", error);
-        throw error;
-      }
+  ipcMain.handle("save-cvs", async (event, cvs) => {
+    try {
+      const filePath = getCVDataFilePath();
+      await promises.mkdir(path.dirname(filePath), { recursive: true });
+      const data = JSON.stringify(cvs, null, 2);
+      await promises.writeFile(filePath, data, "utf-8");
+    } catch (error) {
+      console.error("Failed to save CVs:", error);
+      throw error;
     }
-  );
+  });
   ipcMain.handle("check-cv-data-file", async () => {
     try {
       const filePath = getCVDataFilePath();
@@ -172,6 +169,28 @@ function setupCVHandlerIPC() {
       } catch (error) {
         console.error("Failed to save CV PDF:", error);
         throw new Error(`Failed to save PDF: ${error}`);
+      }
+    }
+  );
+  ipcMain.handle(
+    "get-cv-image-url",
+    async (_, imagePath) => {
+      try {
+        const fullPath = getCVAssetsPath(
+          imagePath.replace(/^cv-assets[\/\\]/, "")
+        );
+        await promises.access(fullPath);
+        const fileBuffer = await promises.readFile(fullPath);
+        const ext = path.extname(fullPath).toLowerCase();
+        let mimeType = "image/jpeg";
+        if (ext === ".png") mimeType = "image/png";
+        else if (ext === ".gif") mimeType = "image/gif";
+        else if (ext === ".webp") mimeType = "image/webp";
+        const base64Data = fileBuffer.toString("base64");
+        return `data:${mimeType};base64,${base64Data}`;
+      } catch (error) {
+        console.error("Failed to load CV image:", error);
+        return null;
       }
     }
   );

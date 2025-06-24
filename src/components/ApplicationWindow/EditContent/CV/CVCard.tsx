@@ -4,6 +4,7 @@ import { CurriculumVitae } from "../../../../types/job-application-types";
 import AnimatedButton from "../../../General/AnimatedButton";
 import { mdiMagnifyExpand } from "@mdi/js";
 import { FullscreenCV } from "../../ViewContent/CVImage";
+import { useCVImageUrl } from "../../../../hooks/useCVImageUrl";
 
 interface CVCardProps {
   cv: CurriculumVitae;
@@ -13,6 +14,7 @@ interface CVCardProps {
 
 const CVCard: React.FC<CVCardProps> = ({ cv, onSelect, isSelected }) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
+  const imageUrl = useCVImageUrl(cv.imagePreviewPath);
 
   return (
     <>
@@ -32,7 +34,13 @@ const CVCard: React.FC<CVCardProps> = ({ cv, onSelect, isSelected }) => {
         }}
         transition={{ duration: 0.2 }}
       >
-        <img src={cv.imagePreviewPath} alt={cv.name} className="block h-60" />
+        {imageUrl ? (
+          <img src={imageUrl} alt={cv.name} className="block h-60" />
+        ) : (
+          <div className="h-60 bg-gray-200 flex items-center justify-center">
+            <p className="text-gray-500 text-sm">Loading image...</p>
+          </div>
+        )}
         <motion.div
           className="absolute inset-0 backdrop-blur-xs bg-teal-50/20 flex flex-col justify-start py-8 px-4 space-y-2"
           variants={{
@@ -59,6 +67,7 @@ const CVCard: React.FC<CVCardProps> = ({ cv, onSelect, isSelected }) => {
           <FullscreenCV
             cv={cv}
             setIsExpanded={setIsExpanded}
+            imageUrl={imageUrl}
           />
         )}
       </AnimatePresence>

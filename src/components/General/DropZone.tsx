@@ -1,12 +1,12 @@
-import React, { useState, useRef } from 'react';
-import Icon from '@mdi/react';
-import { mdiClose, mdiFileCheck } from '@mdi/js';
+import React, { useState, useRef } from "react";
+import Icon from "@mdi/react";
+import { mdiClose, mdiFileCheck } from "@mdi/js";
 
 interface DropZoneProps {
-  onFileDrop: (filePath: string) => void;
+  onFileDrop: (file: File) => void;
   onFileRemove: () => void;
   acceptedFileTypes: string[];
-  previewPath?: string | null;
+  previewUrl?: string | null;
   icon: string;
   className?: string;
   promptText?: string;
@@ -17,20 +17,18 @@ const DropZone: React.FC<DropZoneProps> = ({
   onFileDrop,
   onFileRemove,
   acceptedFileTypes,
-  previewPath,
+  previewUrl,
   icon,
-  className = '',
-  promptText = 'Drag & drop a file or click to select',
-  fileTypePrompt = 'Any file type',
+  className = "",
+  promptText = "Drag & drop a file or click to select",
+  fileTypePrompt = "Any file type",
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      const filePath = (file as any).path;
-      onFileDrop(filePath);
+      onFileDrop(file);
     }
   };
 
@@ -53,19 +51,21 @@ const DropZone: React.FC<DropZoneProps> = ({
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const file = e.dataTransfer.files[0];
-      
-      const isAccepted = acceptedFileTypes.some(type => {
-        if (type.endsWith('/*')) {
+
+      const isAccepted = acceptedFileTypes.some((type) => {
+        if (type.endsWith("/*")) {
           return file.type.startsWith(type.slice(0, -1));
         }
         return file.type === type;
       });
-
       if (isAccepted) {
-        const filePath = (file as any).path;
-        onFileDrop(filePath);
+        onFileDrop(file);
       } else {
-        alert(`Invalid file type. Please drop one of the following: ${acceptedFileTypes.join(', ')}`);
+        alert(
+          `Invalid file type. Please drop one of the following: ${acceptedFileTypes.join(
+            ", "
+          )}`
+        );
       }
       e.dataTransfer.clearData();
     }
@@ -75,16 +75,15 @@ const DropZone: React.FC<DropZoneProps> = ({
     e.stopPropagation();
     onFileRemove();
   };
-
   const handleZoneClick = () => {
     // Don't open file dialog if there's already a file,
     // the user should use the remove button first.
-    if (!previewPath) {
+    if (!previewUrl) {
       inputRef.current?.click();
     }
   };
 
-  const isImage = acceptedFileTypes.includes('image/*');
+  const isImage = acceptedFileTypes.includes("image/*");
 
   return (
     <div
@@ -93,21 +92,26 @@ const DropZone: React.FC<DropZoneProps> = ({
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       className={`relative flex justify-center rounded-lg border-2 border-dashed px-6 py-10 ${
-        isDragging ? 'border-indigo-600 bg-indigo-50' : 'border-gray-300'
-      } transition-colors duration-200 ease-in-out ${previewPath ? '' : 'cursor-pointer'} ${className}`}
+        isDragging ? "border-indigo-600 bg-indigo-50" : "border-gray-300"
+      } transition-colors duration-200 ease-in-out ${
+        previewUrl ? "" : "cursor-pointer"
+      } ${className}`}
     >
-      {previewPath ? (
+      {" "}
+      {previewUrl ? (
         <div className="relative group">
           {isImage ? (
             <img
-              src={previewPath}
+              src={previewUrl}
               alt="File Preview"
               className="h-48 w-auto rounded-md object-cover"
             />
           ) : (
             <div className="h-48 w-full flex flex-col items-center justify-center bg-gray-100 rounded-md p-4">
               <Icon path={mdiFileCheck} size={3} className="text-green-500" />
-              <p className="text-sm text-gray-700 mt-2 text-center break-all">{previewPath.split('\\').pop()}</p>
+              <p className="text-sm text-gray-700 mt-2 text-center break-all">
+                File uploaded
+              </p>
             </div>
           )}
           <button
@@ -128,7 +132,7 @@ const DropZone: React.FC<DropZoneProps> = ({
         ref={inputRef}
         type="file"
         onChange={handleFileSelect}
-        accept={acceptedFileTypes.join(',')}
+        accept={acceptedFileTypes.join(",")}
         className="hidden"
       />
     </div>

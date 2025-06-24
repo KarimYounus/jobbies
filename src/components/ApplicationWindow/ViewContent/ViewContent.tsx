@@ -110,7 +110,7 @@ const ViewContent: React.FC = () => {
 
       {/* Top Portion (CV and Job Description) */}
       <div className="flex justify-between items-start pb-4 border-t border-gray-200 pt-6">
-        {CvImage(jobApplication.cv)}
+        {jobApplication.cv && CvImage(jobApplication.cv)}
         {JobDescription(jobApplication.description || "No job description available.")}
       </div>
 

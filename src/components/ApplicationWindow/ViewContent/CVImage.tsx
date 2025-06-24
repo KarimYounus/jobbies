@@ -3,10 +3,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { mdiClose } from "@mdi/js";
 import { CurriculumVitae } from "../../../types/job-application-types";
 import AnimatedButton from "../../General/AnimatedButton";
+import { useCVImageUrl } from "../../../hooks/useCVImageUrl";
 
 // Function to render CV image with modal view
-function CvImage(cv: CurriculumVitae | undefined) {
+function CvImage(cv: CurriculumVitae) {
   const [cvView, setCVView] = React.useState(false);
+  const imageUrl = useCVImageUrl(cv.imagePreviewPath);
 
   // If cv is undefined, we render a colored box instead of the image
   if (!cv) {
@@ -22,7 +24,7 @@ function CvImage(cv: CurriculumVitae | undefined) {
       <div className="relative z-5">
         <motion.img
           // src={cv?.imagePreviewPath}
-          src="src/assets/images/cv.png"
+          src={imageUrl || undefined}
           alt="CV Preview"
           className="h-full max-h-[39vh] rounded-md object-cover shadow-2xl border border-gray-200 cursor-pointer hover:shadow-3xl transition-shadow"
           initial={{ opacity: 0, y: -400 }}
@@ -54,10 +56,16 @@ export default CvImage;
 export function FullscreenCV({
   cv,
   setIsExpanded,
+  imageUrl,
 }: {
-  cv: CurriculumVitae | undefined;
+  cv: CurriculumVitae;
   setIsExpanded: (isExpanded: boolean) => void;
+  imageUrl?: string | null;
 }) {
+  if (imageUrl === undefined) {
+    imageUrl = useCVImageUrl(cv.imagePreviewPath);
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -86,14 +94,14 @@ export function FullscreenCV({
         /> */}
 
         {/* CV Title */}
-        <motion.div className="flex w-full justify-between items-center py-4"> 
+        <motion.div className="flex w-full justify-between items-center py-4">
           <motion.h2
             className="text-2xl font-semibold text-white"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.1 }}
           >
-            {cv?.name || "Curriculum Vitae"}
+            {cv.name || "Curriculum Vitae"}
           </motion.h2>
           <AnimatedButton
             icon={mdiClose}
@@ -107,7 +115,7 @@ export function FullscreenCV({
         {/* Expanded CV Image */}
         <motion.img
           // src={cv?.imagePreviewPath}
-          src="src/assets/images/cv.png"
+          src={imageUrl || undefined}
           alt="CV Full View"
           className="h-full object-contain rounded-lg shadow-2xl"
           layoutId="cv-image"

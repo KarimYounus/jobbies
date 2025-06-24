@@ -137,23 +137,20 @@ function setupCVHandlerIPC() {
   });
 
   // IPC Handler: Save CVs to the JSON file
-  ipcMain.handle(
-    "save-cvs",
-    async (event, cvs: any[]): Promise<void> => {
-      try {
-        const filePath = getCVDataFilePath();
-        
-        // Ensure the directory exists before writing
-        await fs.mkdir(path.dirname(filePath), { recursive: true });
-        
-        const data = JSON.stringify(cvs, null, 2);
-        await fs.writeFile(filePath, data, "utf-8");
-      } catch (error) {
-        console.error("Failed to save CVs:", error);
-        throw error;
-      }
+  ipcMain.handle("save-cvs", async (event, cvs: any[]): Promise<void> => {
+    try {
+      const filePath = getCVDataFilePath();
+
+      // Ensure the directory exists before writing
+      await fs.mkdir(path.dirname(filePath), { recursive: true });
+
+      const data = JSON.stringify(cvs, null, 2);
+      await fs.writeFile(filePath, data, "utf-8");
+    } catch (error) {
+      console.error("Failed to save CVs:", error);
+      throw error;
     }
-  );
+  });
   // IPC Handler: Check if the CV data file exists
   ipcMain.handle("check-cv-data-file", async (): Promise<boolean> => {
     try {
@@ -172,7 +169,7 @@ function setupCVHandlerIPC() {
   });
 
   // CV Asset Management IPC Handlers
-  const getCVAssetsPath = (subdir: string = '') => {
+  const getCVAssetsPath = (subdir: string = "") => {
     const userDataPath = app.getPath("userData");
     return path.join(userDataPath, "cv-assets", subdir);
   };
@@ -190,7 +187,7 @@ function setupCVHandlerIPC() {
     try {
       const imagesPath = getCVAssetsPath("images");
       const pdfsPath = getCVAssetsPath("pdfs");
-      
+
       await fs.mkdir(imagesPath, { recursive: true });
       await fs.mkdir(pdfsPath, { recursive: true });
     } catch (error) {
@@ -244,6 +241,39 @@ function setupCVHandlerIPC() {
       } catch (error) {
         console.error("Failed to save CV PDF:", error);
         throw new Error(`Failed to save PDF: ${error}`);
+      }
+    }
+  );
+
+  // IPC Handler: Get image data URL from CV assets path
+  ipcMain.handle(
+    "get-cv-image-url",
+    async (_, imagePath: string): Promise<string | null> => {
+      try {
+        // Convert relative path to absolute path in userData
+        const fullPath = getCVAssetsPath(
+          imagePath.replace(/^cv-assets[\/\\]/, "")
+        );
+
+        // Check if file exists
+        await fs.access(fullPath);
+
+        // Read file and convert to data URL
+        const fileBuffer = await fs.readFile(fullPath);
+        const ext = path.extname(fullPath).toLowerCase();
+
+        // Determine MIME type based on extension
+        let mimeType = "image/jpeg"; // default
+        if (ext === ".png") mimeType = "image/png";
+        else if (ext === ".gif") mimeType = "image/gif";
+        else if (ext === ".webp") mimeType = "image/webp";
+
+        // Convert to base64 data URL
+        const base64Data = fileBuffer.toString("base64");
+        return `data:${mimeType};base64,${base64Data}`;
+      } catch (error) {
+        console.error("Failed to load CV image:", error);
+        return null; // Return null if image not found/accessible
       }
     }
   );

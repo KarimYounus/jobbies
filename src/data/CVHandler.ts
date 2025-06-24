@@ -236,15 +236,15 @@ export class CVHandler extends EventTarget {
     // Return the asset path for storage in CV object
     throw new Error('Clipboard image saving not yet implemented');
   }
-
   /**
    * Helper method to create a CV with automatic file processing.
    * Handles file uploads and saves them to the assets directory before creating the CV.
+   * Note: This method only processes files and creates the CV object. Call addCV() separately to save it.
    * 
    * @param cvData - Basic CV information
    * @param imageFile - Optional image file for preview
    * @param pdfFile - Optional PDF file for document
-   * @returns Promise<CurriculumVitae> - The created CV with asset paths
+   * @returns Promise<CurriculumVitae> - The created CV with asset paths (not yet saved to collection)
    */
   public async createCVWithFiles(
     cvData: Omit<CurriculumVitae, 'imagePreviewPath' | 'pdfPath'>,
@@ -262,17 +262,12 @@ export class CVHandler extends EventTarget {
       let pdfPath: string | undefined;
       if (pdfFile) {
         pdfPath = await this.savePDFFromFile(pdfFile);
-      }
-
-      // Create the complete CV object
+      }      // Create the complete CV object
       const newCV: CurriculumVitae = {
         ...cvData,
         imagePreviewPath,
         pdfPath,
       };
-
-      // Add to collection
-      await this.addCV(newCV);
 
       return newCV;
     } catch (error) {
