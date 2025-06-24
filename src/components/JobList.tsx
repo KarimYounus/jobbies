@@ -4,8 +4,7 @@ import JobListItem from "./JobListItem";
 import { JobApplication } from "../types/job-application-types";
 import ApplicationWindow from "./ApplicationWindow/ApplicationWindow";
 import { StatusItem } from "../types/status-types";
-import { stat } from "original-fs";
-import { s } from "motion/react-client";
+import AnimatedButton from "./General/AnimatedButton";
 
 interface JobListProps {
   status: StatusItem;

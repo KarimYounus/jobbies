@@ -10,6 +10,7 @@ interface AnimatedButtonProps {
     captionPosition?: "left" | "right";
     disabled?: boolean;
     iconClassName?: string;
+    animationType?: "hover" | "click"; // New prop for animation behavior
 }
 
 const AnimatedButton: React.FC<AnimatedButtonProps> = ({
@@ -20,23 +21,34 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
     captionPosition = "left",
     disabled = false,
     iconClassName = "text-gray-600",
+    animationType = "hover", // Default to existing behavior
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [isClicked, setIsClicked] = useState(false);
+
+  const handleClick = () => {
+    if (animationType === "click") {
+      setIsClicked(true);
+      // Reset click state after animation
+      setTimeout(() => setIsClicked(false), 300);
+    }
+    onClick();
+  };
 
   return (
     <div
       className="relative inline-block"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-    >
-      <motion.button
+    >      <motion.button
         layout
-        onClick={onClick}
+        onClick={handleClick}
         className={`${className} ${
           disabled ? "opacity-50 cursor-not-allowed" : ""
         }`}
         disabled={disabled}
-        whileHover={{ scale: 1.5, rotate: 360 }}
+        whileHover={animationType === "hover" ? { scale: 1.5, rotate: 360 } : { scale: 1.1 }}
+        animate={animationType === "click" && isClicked ? { rotate: 360 } : {}}
       >
         <Icon path={icon} size={1} className={`${iconClassName}`} />
       </motion.button>

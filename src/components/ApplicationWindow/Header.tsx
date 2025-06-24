@@ -28,7 +28,7 @@ const Header: React.FC<HeaderProps> = ({ onClose, onDelete, onSave }) => {
     throw new Error("Job application data is not available inside Header");
   };  return (
     <div 
-      className="sticky top-0 z-10 rounded-t-lg border-b border-gray-200 h-[17vh]"
+      className="sticky top-0 z-10 rounded-t-lg border-b border-gray-200"
       style={{
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',

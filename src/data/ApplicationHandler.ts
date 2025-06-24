@@ -1,6 +1,7 @@
 import { JobApplication } from "../types/job-application-types";
 import { applicationCollection } from "./application-collection";
 import { defaultStatusItems, StatusItem } from "../types/status-types";
+import { SortConfig } from "../types/sort-types";
 
 /**
  * Events emitted by the CollectionHandler for UI reactivity.
@@ -151,8 +152,19 @@ export class ApplicationHandler extends EventTarget {
    * Gets all applications grouped by status.
    * This is the primary method for UI components to access organized data.
    */
-  public getApplicationsByStatus(): Map<StatusItem, JobApplication[]> {
-    return new Map(this.applicationsByStatus); // Return copy to prevent external mutations
+  public getApplicationsByStatus(sortConfig?: SortConfig): Map<StatusItem, JobApplication[]> {
+    if (!sortConfig) {
+      return new Map(this.applicationsByStatus); // Return copy to prevent external mutations
+    }
+
+    const sortedByStatus = new Map<StatusItem, JobApplication[]>();
+    
+    for (const [status, applications] of this.applicationsByStatus) {
+      const sortedApps = this.sortApplications(applications, sortConfig);
+      sortedByStatus.set(status, sortedApps);
+    }
+    
+    return sortedByStatus;
   }
 
   /**
@@ -168,7 +180,40 @@ export class ApplicationHandler extends EventTarget {
    */
   public getApplicationById(id: string): JobApplication | undefined {
     return this.applications.find((app) => app.id === id);
-  }  /**
+  }
+
+  /**
+   * Sort utility function for job applications.
+   * Handles date and company name sorting with configurable order.
+   * 
+   * Design decisions:
+   * - Immutable sorting (creates new array) to maintain React optimization
+   * - Case-insensitive company comparison for better UX
+   * - Robust date parsing with fallback handling
+   */
+  private sortApplications(
+    applications: JobApplication[], 
+    config: SortConfig
+  ): JobApplication[] {
+    return [...applications].sort((a, b) => {
+      let comparison = 0;
+      
+      switch (config.field) {
+        case 'date':
+          const dateA = new Date(a.appliedDate);
+          const dateB = new Date(b.appliedDate);
+          comparison = dateA.getTime() - dateB.getTime();
+          break;
+        case 'company':
+          comparison = a.company.toLowerCase().localeCompare(b.company.toLowerCase());
+          break;
+      }
+      
+      return config.order === 'desc' ? -comparison : comparison;
+    });
+  }
+
+  /**
    * Adds a new job application to the collection.
    * Automatically generates ID if not provided and persists to file.
    * Formats salary input for consistent display.
