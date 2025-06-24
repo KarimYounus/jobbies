@@ -100,6 +100,29 @@ export class ApplicationHandler extends EventTarget {
   }
 
   /**
+   * Formats salary input to ensure consistent display with £ prefix and comma separations.
+   * Handles various input formats gracefully and returns formatted string or empty string.
+   */
+  private formatSalary(salary: string | undefined): string {
+    if (!salary || salary.trim() === "") {
+      return "";
+    }
+
+    // Remove existing £ symbol, spaces, and commas to get raw number
+    const cleanSalary = salary.replace(/[£\s,]/g, "");
+
+    // Check if it's a valid number
+    const numericSalary = parseFloat(cleanSalary);
+    if (isNaN(numericSalary) || numericSalary < 0) {
+      return salary; // Return original if not a valid positive number
+    }
+
+    // Format with commas and £ prefix
+    const formattedNumber = Math.round(numericSalary).toLocaleString("en-GB");
+    return `£${formattedNumber}`;
+  }
+
+  /**
    * Creates a new job application object with required fields and auto-generated ID.
    * Useful for initializing forms or creating templates.
    */
@@ -145,10 +168,10 @@ export class ApplicationHandler extends EventTarget {
    */
   public getApplicationById(id: string): JobApplication | undefined {
     return this.applications.find((app) => app.id === id);
-  }
-  /**
+  }  /**
    * Adds a new job application to the collection.
    * Automatically generates ID if not provided and persists to file.
+   * Formats salary input for consistent display.
    */
   public async addApplication(
     application: Omit<JobApplication, "id"> | JobApplication
@@ -158,6 +181,11 @@ export class ApplicationHandler extends EventTarget {
       "id" in application && application.id
         ? (application as JobApplication)
         : { ...application, id: this.generateUniqueId() };
+
+    // Format salary before saving
+    if (applicationWithId.salary) {
+      applicationWithId.salary = this.formatSalary(applicationWithId.salary);
+    }
 
     // Ensure unique ID to prevent conflicts
     if (this.applications.some((app) => app.id === applicationWithId.id)) {
@@ -184,10 +212,10 @@ export class ApplicationHandler extends EventTarget {
       throw error;
     }
   }
-
   /**
    * Updates an existing application in the collection.
    * Preserves the original if update fails to maintain data integrity.
+   * Formats salary input for consistent display.
    */
   public async updateApplication(
     updatedApplication: JobApplication
@@ -197,6 +225,11 @@ export class ApplicationHandler extends EventTarget {
     );
     if (index === -1) {
       throw new Error(`Application with ID ${updatedApplication.id} not found`);
+    }
+
+    // Format salary before saving
+    if (updatedApplication.salary) {
+      updatedApplication.salary = this.formatSalary(updatedApplication.salary);
     }
 
     const originalApplication = this.applications[index];
@@ -314,15 +347,15 @@ export class ApplicationHandler extends EventTarget {
  * Export a singleton instance for immediate use.
  * This maintains backward compatibility with the existing export pattern.
  */
-const collectionHandler = ApplicationHandler.getInstance();
+const applicationHandler = ApplicationHandler.getInstance();
 
 /**
  * Backward compatibility export.
  * This allows existing code to continue working while we transition to the new class-based approach.
  */
-export const applicationsByStatus = collectionHandler.getApplicationsByStatus();
+export const applicationsByStatus = applicationHandler.getApplicationsByStatus();
 
 /**
  * Export the singleton instance for use throughout the application.
  */
-export { collectionHandler };
+export { applicationHandler };

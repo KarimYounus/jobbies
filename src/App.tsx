@@ -2,7 +2,7 @@ import AnimatedButton from "./components/General/AnimatedButton";
 import { motion } from "motion/react";
 import JobList from "./components/JobList";
 import { mdiNotePlusOutline } from "@mdi/js";
-import { collectionHandler } from "./data/ApplicationHandler";
+import { applicationHandler } from "./data/ApplicationHandler";
 import { useEffect, useState } from "react";
 import { JobApplication } from "./types/job-application-types";
 import ApplicationWindow from "./components/ApplicationWindow/ApplicationWindow";
@@ -18,10 +18,9 @@ function App() {
   const [newApplication, setNewApplication] = useState<JobApplication | null>(
     null
   );
-
   // Handler for creating a new application
   const handleAddJobClick = () => {
-    const freshApplication = collectionHandler.createNewApplication();
+    const freshApplication = applicationHandler.createNewApplication();
     setNewApplication(freshApplication);
     setIsJobViewOpen(true);
   };
@@ -30,8 +29,8 @@ function App() {
   useEffect(() => {
     const initializeData = async () => {
       try {
-        await collectionHandler.initialize();
-        setApplicationsByStatus(collectionHandler.getApplicationsByStatus());
+        await applicationHandler.initialize();
+        setApplicationsByStatus(applicationHandler.getApplicationsByStatus());
         setIsLoading(false);
       } catch (error) {
         console.error("Failed to initialize data:", error);
@@ -41,31 +40,31 @@ function App() {
 
     // Event listeners for data changes to keep UI reactive
     const handleDataChange = () => {
-      setApplicationsByStatus(collectionHandler.getApplicationsByStatus());
+      setApplicationsByStatus(applicationHandler.getApplicationsByStatus());
     };
 
-    collectionHandler.addEventListener("applications-loaded", handleDataChange);
-    collectionHandler.addEventListener("application-added", handleDataChange);
-    collectionHandler.addEventListener("application-updated", handleDataChange);
-    collectionHandler.addEventListener("application-deleted", handleDataChange);
+    applicationHandler.addEventListener("applications-loaded", handleDataChange);
+    applicationHandler.addEventListener("application-added", handleDataChange);
+    applicationHandler.addEventListener("application-updated", handleDataChange);
+    applicationHandler.addEventListener("application-deleted", handleDataChange);
 
     initializeData();
 
     // Cleanup event listeners on component unmount
     return () => {
-      collectionHandler.removeEventListener(
+      applicationHandler.removeEventListener(
         "applications-loaded",
         handleDataChange
       );
-      collectionHandler.removeEventListener(
+      applicationHandler.removeEventListener(
         "application-added",
         handleDataChange
       );
-      collectionHandler.removeEventListener(
+      applicationHandler.removeEventListener(
         "application-updated",
         handleDataChange
       );
-      collectionHandler.removeEventListener(
+      applicationHandler.removeEventListener(
         "application-deleted",
         handleDataChange
       );
@@ -110,7 +109,6 @@ function App() {
 
         {/* Buttons */}
         <motion.div className="flex gap-4 pr-5">
-          {" "}
           <AnimatedButton
             icon={mdiNotePlusOutline}
             caption="Add Job"

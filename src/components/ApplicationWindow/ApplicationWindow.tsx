@@ -5,9 +5,8 @@ import EditContent from "./EditContent/EditContent";
 import ConfirmationDialog from "../General/ConfirmationDialog";
 import { motion, AnimatePresence } from "framer-motion";
 import { JobApplication } from "../../types/job-application-types";
-import { collectionHandler } from "../../data/ApplicationHandler";
+import { applicationHandler } from "../../data/ApplicationHandler";
 import { StatusItem } from "../../types/status-types";
-import { s } from "motion/react-client";
 
 interface ApplicationWindowProps {
   jobApplication: JobApplication | null;
@@ -140,10 +139,8 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
     if (!jobApplication || createNew) return; // Don't auto-save status changes for new applications
 
     try {
-      const updatedJob = { ...jobApplication, status: newStatus };
-
-      // Save immediately via CollectionHandler
-      await collectionHandler.updateApplication(updatedJob);
+      const updatedJob = { ...jobApplication, status: newStatus };      // Save immediately via ApplicationHandler
+      await applicationHandler.updateApplication(updatedJob);
 
       // Update local state
       setJobApplication(updatedJob);
@@ -171,14 +168,14 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
 
       if (createNew) {
         // Creating a new application - use addApplication
-        const savedApplication = await collectionHandler.addApplication(
+        const savedApplication = await applicationHandler.addApplication(
           jobApplication
         );
         setJobApplication(savedApplication);
         setInitialJobState(savedApplication);
       } else {
         // Updating existing application - use updateApplication
-        await collectionHandler.updateApplication(jobApplication);
+        await applicationHandler.updateApplication(jobApplication);
         setInitialJobState(jobApplication);
       }
 
@@ -213,7 +210,7 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
   const handleDeleteAndClose = async () => {
     if (!jobApplication) return;
     try {
-      await collectionHandler.deleteApplication(jobApplication.id);
+      await applicationHandler.deleteApplication(jobApplication.id);
       onClose(); // Close window after successful deletion
     } catch (err) {
       setError(
