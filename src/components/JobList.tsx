@@ -5,6 +5,7 @@ import { JobApplication } from "../types/job-application-types";
 import ApplicationWindow from "./ApplicationWindow/ApplicationWindow";
 import { StatusItem } from "../types/status-types";
 import { stat } from "original-fs";
+import { s } from "motion/react-client";
 
 interface JobListProps {
   status: StatusItem;
@@ -13,7 +14,6 @@ interface JobListProps {
 
 const JobList: React.FC<JobListProps> = ({ status, items }) => {
   const [isExpanded, setIsExpanded] = useState(false); // State to track if the list is expanded
-
   // State to manage selected job and job view modal
   const [selectedJob, setSelectedJob] = useState<JobApplication | null>(null);
   const [isJobViewOpen, setIsJobViewOpen] = useState(false);
@@ -44,7 +44,14 @@ const JobList: React.FC<JobListProps> = ({ status, items }) => {
     if (headerRef.current) {
       setHeaderHeight(headerRef.current.offsetHeight);
     }
-  }, [isExpanded]);
+  }, [isExpanded, items.length]); // Recalculate heights when expanded state or number of items changes
+
+  // Function called to collapse list when there are no items
+  useEffect(() => {
+    if (items.length === 0) {
+      setIsExpanded(false);
+    }
+  }, [items.length]);
 
   const handleExpandToggle = () => {
     if (items.length === 0) return;
