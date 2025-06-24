@@ -237,10 +237,8 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-          >
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl h-full max-h-[90vh] flex flex-col mx-4">
-              {" "}
+            className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-2xl"
+          >            <div className="rounded-lg shadow-xl w-full max-w-4xl h-full max-h-[90vh] flex flex-col mx-4 overflow-hidden">
               {jobApplication && (
                 <Header
                   onClose={handleCloseWithConfirmation}
@@ -248,10 +246,12 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
                   onDelete={handleDeleteAndClose}
                 />
               )}
-              <div className="flex-grow overflow-y-auto">
-                {isEditing ? <EditContent /> : <ViewContent />}
+              <div className="flex-grow overflow-y-auto bg-white rounded-b-lg pt-0 -mt-[17vh] no-scrollbar">
+                <div className="pt-[17vh]">
+                  {isEditing ? <EditContent /> : <ViewContent />}
+                </div>
               </div>
-            </div>{" "}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

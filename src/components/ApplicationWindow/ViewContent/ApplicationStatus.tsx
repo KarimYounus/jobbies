@@ -32,12 +32,11 @@ function ApplicationStatus({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Animate current status out/in on change */}
-      <motion.div
+      {/* Animate current status out/in on change */}      <motion.div
         key={statusItem.text}
         layout
         transition={{ type: "spring", stiffness: 400, damping: 30 }}
-        className="z-10 pr-4"
+        className="pr-4"
         style={{
           marginRight: showMargin ? 16 : 0,
           transition: "margin-right 0.5s cubic-bezier(.19,.95,.74,1.01)",
@@ -119,9 +118,8 @@ function StatusDisplay({
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-      />
-      <motion.span
-        className="relative z-10 text-black tracking-wider"
+      />      <motion.span
+        className="relative text-black tracking-wider"
         initial={{ opacity: 0, x: 100 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, delay: 0.2, ease: [0.85, 0, 0.15, 1] }}

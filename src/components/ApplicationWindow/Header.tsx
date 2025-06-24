@@ -26,10 +26,15 @@ const Header: React.FC<HeaderProps> = ({ onClose, onDelete, onSave }) => {
 
   if (!jobApplication) {
     throw new Error("Job application data is not available inside Header");
-  };
-
-  return (
-    <div className="sticky top-0 z-10 rounded-t-lg border-b border-gray-200 bg-white/10 h-[17vh]">
+  };  return (
+    <div 
+      className="sticky top-0 z-10 rounded-t-lg border-b border-gray-200 h-[17vh]"
+      style={{
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        backgroundColor: 'rgba(255, 255, 255, 0.1)'
+      }}
+    >
       <div className="flex items-center justify-between p-6">
         <div className="flex items-center space-x-4">
           {isEditing ? (
