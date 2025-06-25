@@ -6,8 +6,8 @@ import {
   mdiSortCalendarAscending,
   mdiSortCalendarDescending,
 } from "@mdi/js";
-import AnimatedButton from "./General/AnimatedButton";
-import { SortConfig, sortLabelToField } from "../types/sort-types";
+import AnimatedButton from "../General/AnimatedButton";
+import { SortConfig, sortLabelToField } from "../../types/sort-types";
 
 interface SortOverlayProps {
   isOpen: boolean;
@@ -27,6 +27,10 @@ const SortOptions: SortMode[] = [
   },
   {
     label: "Alphabetical (Company)",
+    icons: [mdiSortAlphabeticalDescending, mdiSortAlphabeticalAscending],
+  },
+  {
+    label: "Alphabetical (Position)",
     icons: [mdiSortAlphabeticalDescending, mdiSortAlphabeticalAscending],
   },
 ];

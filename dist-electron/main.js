@@ -195,6 +195,39 @@ function setupCVHandlerIPC() {
     }
   );
 }
+function setupSettingsIPC() {
+  const getSettingsFilePath = () => {
+    const userDataPath = app.getPath("userData");
+    return path.join(userDataPath, "app-settings.json");
+  };
+  ipcMain.handle("load-settings", async () => {
+    try {
+      const filePath = getSettingsFilePath();
+      const data = await promises.readFile(filePath, "utf-8");
+      return JSON.parse(data);
+    } catch (error) {
+      if (error.code === "ENOENT") {
+        return {};
+      }
+      console.error("Failed to load settings:", error);
+      throw error;
+    }
+  });
+  ipcMain.handle(
+    "save-settings",
+    async (_, settings) => {
+      try {
+        const filePath = getSettingsFilePath();
+        const data = JSON.stringify(settings, null, 2);
+        await promises.writeFile(filePath, data, "utf-8");
+        console.log("Settings saved successfully to:", filePath);
+      } catch (error) {
+        console.error("Failed to save settings:", error);
+        throw error;
+      }
+    }
+  );
+}
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
@@ -210,6 +243,7 @@ app.whenReady().then(() => {
   createWindow();
   setupApplicationHandlerIPC();
   setupCVHandlerIPC();
+  setupSettingsIPC();
 });
 export {
   MAIN_DIST,

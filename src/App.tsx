@@ -1,112 +1,61 @@
 import AnimatedButton from "./components/General/AnimatedButton";
 import { motion } from "motion/react";
-import JobList from "./components/JobList";
-import { mdiNotePlusOutline, mdiSort } from "@mdi/js";
+import JobList from "./components/HomeView/JobList";
+import {
+  mdiCogOutline,
+  mdiNotePlusOutline,
+  mdiSort,
+  mdiTextBoxOutline,
+} from "@mdi/js";
 import { applicationHandler } from "./data/ApplicationHandler";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { JobApplication } from "./types/job-application-types";
 import ApplicationWindow from "./components/ApplicationWindow/ApplicationWindow";
-import { StatusItem } from "./types/status-types";
-import { SortOverlay } from "./components/SortOverlay";
+import { SortOverlay } from "./components/HomeView/SortOverlay";
 import { SortConfig } from "./types/sort-types";
-import { AutoUpdatePopup } from "./components/AutoUpdatePopup";
+import { AutoUpdatePopup } from "./components/HomeView/AutoUpdatePopup";
+import SettingsWindow from "./components/SettingsWindow/SettingsWindow";
+import { SettingsProvider, useSettings } from "./components/SettingsWindow/SettingsContext";
+import { useApplicationData } from "./hooks/useApplicationData";
+import { useSettingsIntegration } from "./hooks/useSettingsIntegration";
 
 function App() {
-  // State to hold the applications grouped by status
-  const [applicationsByStatus, setApplicationsByStatus] = useState<
-    Map<StatusItem, JobApplication[]>
-  >(new Map());  const [isLoading, setIsLoading] = useState(true);
+  return (
+    <SettingsProvider>
+      <AppContent />
+    </SettingsProvider>
+  );
+}
+
+function AppContent() {
+  const { settings } = useSettings();
+
+  // UI state
+  const [newApplication, setNewApplication] = useState<JobApplication | null>(null);
   const [isJobViewOpen, setIsJobViewOpen] = useState(false);
   const [isSortOverlayOpen, setIsSortOverlayOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
-  const [newApplication, setNewApplication] = useState<JobApplication | null>(
-    null
-  );
-  
-  // State for auto-update popup
-  const [showAutoUpdatePopup, setShowAutoUpdatePopup] = useState(false);
-  const [autoUpdateCount, setAutoUpdateCount] = useState(0);
-  const [autoUpdateApplications, setAutoUpdateApplications] = useState<Array<{company: string, position: string}>>([]);// Handler for creating a new application
-  
+
+  // Custom hooks for complex logic
+  const {
+    applicationsByStatus,
+    isLoading,
+    autoUpdateCount,
+    autoUpdateApplications,
+    showAutoUpdatePopup,
+    setShowAutoUpdatePopup,
+  } = useApplicationData(sortConfig);
+
+  // Apply settings to ApplicationHandler
+  useSettingsIntegration(settings, sortConfig, setSortConfig);
+
+  // Handler functions
   const handleAddJobClick = () => {
     const freshApplication = applicationHandler.createNewApplication();
     setNewApplication(freshApplication);
     setIsJobViewOpen(true);
   };
-  
-  // Initialize the collection handler and set up event listeners
-  useEffect(() => {
-    const initializeData = async () => {
-      try {
-        await applicationHandler.initialize();
-        setApplicationsByStatus(applicationHandler.getApplicationsByStatus(sortConfig || undefined));
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Failed to initialize data:", error);
-        setIsLoading(false);
-      }
-    };    // Event listeners for data changes to keep UI reactive
-    const handleDataChange = () => {
-      setApplicationsByStatus(applicationHandler.getApplicationsByStatus(sortConfig || undefined));
-    };
-
-    // Event listener for auto-updates
-    const handleAutoUpdate = (event: CustomEvent) => {
-      const count = event.detail?.count || 0;
-      const applications = event.detail?.applications || [];
-      
-      if (count > 0) {
-        setAutoUpdateCount(count);
-        setAutoUpdateApplications(applications);
-        setShowAutoUpdatePopup(true);
-      }
-      // Also refresh the applications display
-      handleDataChange();
-    };
-
-    applicationHandler.addEventListener(
-      "applications-loaded",
-      handleDataChange
-    );
-    applicationHandler.addEventListener("application-added", handleDataChange);
-    applicationHandler.addEventListener(
-      "application-updated",
-      handleDataChange
-    );
-    applicationHandler.addEventListener(
-      "application-deleted",
-      handleDataChange
-    );
-    applicationHandler.addEventListener(
-      "applications-auto-updated",
-      handleAutoUpdate as EventListener
-    );
-
-    initializeData();
-
-    // Cleanup event listeners on component unmount
-    return () => {
-      applicationHandler.removeEventListener(
-        "applications-loaded",
-        handleDataChange
-      );
-      applicationHandler.removeEventListener(
-        "application-added",
-        handleDataChange
-      );
-      applicationHandler.removeEventListener(
-        "application-updated",
-        handleDataChange
-      );      applicationHandler.removeEventListener(
-        "application-deleted",
-        handleDataChange
-      );
-      applicationHandler.removeEventListener(
-        "applications-auto-updated",
-        handleAutoUpdate as EventListener
-      );
-    };
-  }, [sortConfig]); // Re-run when sort configuration changes
 
   // Show loading state while data is being initialized
   if (isLoading) {
@@ -146,6 +95,13 @@ function App() {
         {/* Buttons */}
         <motion.div className="flex gap-4 pr-5">
           <AnimatedButton
+            icon={mdiNotePlusOutline}
+            caption="Add Job"
+            className="p-2 mx-3 hover:bg-teal-200 rounded-lg transition-colors cursor-pointer"
+            iconClassName="text-gray-200 hover:text-gray-800"
+            onClick={handleAddJobClick}
+          />
+          <AnimatedButton
             icon={mdiSort}
             caption="Sort Applications"
             className="p-2 mx-3 hover:bg-teal-200 rounded-lg transition-colors cursor-pointer"
@@ -153,11 +109,18 @@ function App() {
             onClick={() => setIsSortOverlayOpen(true)}
           />
           <AnimatedButton
-            icon={mdiNotePlusOutline}
-            caption="Add Job"
+            icon={mdiTextBoxOutline}
+            caption="CV Collection"
             className="p-2 mx-3 hover:bg-teal-200 rounded-lg transition-colors cursor-pointer"
             iconClassName="text-gray-200 hover:text-gray-800"
-            onClick={handleAddJobClick}
+            onClick={() => {}}
+          />
+          <AnimatedButton
+            icon={mdiCogOutline}
+            caption="Settings"
+            className="p-2 mx-3 hover:bg-teal-200 rounded-lg transition-colors cursor-pointer"
+            iconClassName="text-gray-200 hover:text-gray-800"
+            onClick={() => setIsSettingsOpen(true)}
           />
         </motion.div>
       </motion.div>
@@ -188,18 +151,23 @@ function App() {
         onClose={() => setIsJobViewOpen(false)}
         jobApplication={newApplication}
         createNew={true}
-      />      <SortOverlay
+      />{" "}
+      <SortOverlay
         isOpen={isSortOverlayOpen}
-        onClose={() => setIsSortOverlayOpen(false)}        onSort={(sort) => {
+        onClose={() => setIsSortOverlayOpen(false)}
+        onSort={(sort) => {
           setSortConfig(sort);
-          // Keep overlay open for multiple selections
-        }}      />
-      
+        }}
+      />
       <AutoUpdatePopup
         isVisible={showAutoUpdatePopup}
         count={autoUpdateCount}
         applications={autoUpdateApplications}
         onClose={() => setShowAutoUpdatePopup(false)}
+      />
+      <SettingsWindow
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
       />
     </motion.div>
   );

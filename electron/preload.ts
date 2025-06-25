@@ -41,6 +41,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.invoke('save-cv-pdf', fileName, fileBuffer),
   getCVImageUrl: (imagePath: string) => 
     ipcRenderer.invoke('get-cv-image-url', imagePath),
+
+  // Settings operations
+  loadSettings: () => ipcRenderer.invoke('load-settings'),
+  saveSettings: (settings: any) => ipcRenderer.invoke('save-settings', settings),
 });
 
 // Type definitions for the exposed API
@@ -54,11 +58,15 @@ export interface ElectronAPI {
   loadCVs: () => Promise<any[]>;
   saveCVs: (cvs: any[]) => Promise<void>;
   checkCVDataFile: () => Promise<boolean>;
-    // CV asset operations
+  // CV asset operations
   ensureCVAssets: () => Promise<void>;
   saveImageFile: (fileName: string, fileBuffer: ArrayBuffer) => Promise<string>;
   savePDFFile: (fileName: string, fileBuffer: ArrayBuffer) => Promise<string>;
   getCVImageUrl: (imagePath: string) => Promise<string | null>;
+
+  // Settings operations
+  loadSettings: () => Promise<any>;
+  saveSettings: (settings: any) => Promise<void>;
 }
 
 declare global {

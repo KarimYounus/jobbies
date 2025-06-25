@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import JobListItem from "./JobListItem";
-import { JobApplication } from "../types/job-application-types";
-import ApplicationWindow from "./ApplicationWindow/ApplicationWindow";
-import { StatusItem } from "../types/status-types";
-import AnimatedButton from "./General/AnimatedButton";
+import { JobApplication } from "../../types/job-application-types";
+import ApplicationWindow from "../ApplicationWindow/ApplicationWindow";
+import { StatusItem } from "../../types/status-types";
+import AnimatedButton from "../General/AnimatedButton";
 
 interface JobListProps {
   status: StatusItem;

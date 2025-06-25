@@ -279,6 +279,53 @@ function setupCVHandlerIPC() {
   );
 }
 
+/**
+ * Sets up IPC handlers for settings data operations.
+ * Handles loading and saving application settings to a JSON file.
+ */
+function setupSettingsIPC() {
+  // Settings IPC Handlers
+
+  // Define the settings file path inside the app's user data directory
+  const getSettingsFilePath = () => {
+    const userDataPath = app.getPath("userData");
+    return path.join(userDataPath, "app-settings.json");
+  };
+
+  // IPC Handler: Load settings from the JSON file
+  ipcMain.handle("load-settings", async (): Promise<any> => {
+    try {
+      const filePath = getSettingsFilePath();
+      const data = await fs.readFile(filePath, "utf-8");
+      return JSON.parse(data);
+    } catch (error) {
+      // Case: File not found or empty
+      if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+        return {}; // Return empty object if file does not exist
+      }
+      // Case: Other read errors
+      console.error("Failed to load settings:", error);
+      throw error;
+    }
+  });
+
+  // IPC Handler: Save settings to the JSON file
+  ipcMain.handle(
+    "save-settings",
+    async (_, settings: any): Promise<void> => {
+      try {
+        const filePath = getSettingsFilePath();
+        const data = JSON.stringify(settings, null, 2);
+        await fs.writeFile(filePath, data, "utf-8");
+        console.log("Settings saved successfully to:", filePath);
+      } catch (error) {
+        console.error("Failed to save settings:", error);
+        throw error;
+      }
+    }
+  );
+}
+
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
@@ -301,4 +348,5 @@ app.whenReady().then(() => {
   createWindow();
   setupApplicationHandlerIPC();
   setupCVHandlerIPC();
+  setupSettingsIPC();
 });

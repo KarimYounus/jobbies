@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { JobApplication } from "../../types/job-application-types";
 import { applicationHandler } from "../../data/ApplicationHandler";
 import { StatusItem } from "../../types/status-types";
+import { useSettings } from "../SettingsWindow/SettingsContext";
 
 interface ApplicationWindowProps {
   jobApplication: JobApplication | null;
@@ -41,6 +42,8 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
   onClose,
   createNew = false,
 }) => {
+  const { settings } = useSettings();
+
   if (!job) return null;
   const [jobApplication, setJobApplication] = useState<JobApplication | null>(
     job
@@ -203,7 +206,13 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
 
   // Delete operation
   const handleDeleteWithConfirmation = async () => {
-    setShowDeleteDialog(true);
+    // Check if confirmation is required from settings
+    if (settings.confirmDeleteActions) {
+      setShowDeleteDialog(true);
+    } else {
+      // Delete immediately without confirmation
+      await handleDeleteAndClose();
+    }
   };
 
   // Handle delete and close
@@ -243,7 +252,6 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
             transition={{ duration: 0.2 }}
             className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-2xl"
           >
-            {" "}
             <div className="rounded-lg shadow-xl w-full max-w-4xl h-full max-h-[90vh] flex flex-col mx-4 overflow-hidden">
               {jobApplication && (
                 <Header
@@ -253,8 +261,30 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
                 />
               )}
               <div className="flex-grow overflow-y-auto bg-white rounded-b-lg pt-0 -mt-[17vh] no-scrollbar">
-                <div className="pt-[17vh]">
-                  {isEditing ? <EditContent /> : <ViewContent />}
+                <div className="pt-[17vh] relative">
+                  <AnimatePresence mode="wait">
+                    {isEditing ? (
+                      <motion.div
+                        key="edit"
+                        initial={{ opacity: 1, x: 500 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -500}}
+                        transition={{ duration: 0.3, ease: [0.85, 0, 0.15, 1] }}
+                      >
+                        <EditContent />
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="view"
+                        initial={{ opacity: 1, x: 500 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -500 }}
+                        transition={{ duration: 0.3, ease: [0.85, 0, 0.15, 1] }}
+                      >
+                        <ViewContent />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </div>
             </div>

@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import Icon from "@mdi/react";
 import { mdiMapMarker, mdiCash, mdiCalendarClock } from "@mdi/js";
-import { JobApplication } from "../types/job-application-types";
+import { JobApplication } from "../../types/job-application-types";
 
 interface JobListItemProps {
   job: JobApplication;

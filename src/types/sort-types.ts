@@ -8,7 +8,7 @@
  */
 
 export interface SortConfig {
-  field: 'date' | 'company';
+  field: 'date' | 'company' | 'position';
   order: 'asc' | 'desc';
 }
 
@@ -17,5 +17,6 @@ export interface SortConfig {
  */
 export const sortLabelToField: Record<string, SortConfig['field']> = {
   'Date Created': 'date',
-  'Alphabetical (Company)': 'company'
+  'Alphabetical (Company)': 'company',
+  'Alphabetical (Position)': 'position'
 };

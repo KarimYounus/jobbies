@@ -34,6 +34,9 @@ export class ApplicationHandler extends EventTarget {
   private applicationsByStatus: Map<StatusItem, JobApplication[]> = new Map();
   private readonly dataFilePath: string;
   private isInitialized: boolean = false;
+  private autoUpdateEnabled: boolean = true;
+  private autoUpdateInterval: number = 30; // Default to 30 days
+  private defaultStatus: StatusItem = defaultStatusItems[0]; // Default to first status
 
   /**
    * Private constructor to enforce singleton pattern.
@@ -66,9 +69,6 @@ export class ApplicationHandler extends EventTarget {
     }    try {
       await this.loadApplicationsFromFile();
       
-      // Auto-update old applications after loading
-      this.updateOldApplicationsStatus();
-      
       this.isInitialized = true;
       this.dispatchEvent(new CustomEvent("applications-loaded"));
       console.log("Applications loaded successfully from file.");
@@ -81,9 +81,6 @@ export class ApplicationHandler extends EventTarget {
       );      // Fallback to placeholder data for development
       this.applications = [...applicationCollection];
       this.rebuildStatusGroups();
-      
-      // Auto-update old applications even with fallback data
-      this.updateOldApplicationsStatus();
       
       this.isInitialized = true;
       this.dispatchEvent(new CustomEvent("data-error", { detail: error }));
@@ -140,7 +137,7 @@ export class ApplicationHandler extends EventTarget {
       id: this.generateUniqueId(),
       company: "",
       position: "",
-      status: defaultStatusItems[0],
+      status: this.defaultStatus,
       appliedDate: new Date().toISOString().split("T")[0],
       description: "",
       salary: "",
@@ -212,6 +209,9 @@ export class ApplicationHandler extends EventTarget {
           break;
         case 'company':
           comparison = a.company.toLowerCase().localeCompare(b.company.toLowerCase());
+          break;
+        case 'position':
+          comparison = a.position.toLowerCase().localeCompare(b.position.toLowerCase());
           break;
       }
       
@@ -394,19 +394,24 @@ export class ApplicationHandler extends EventTarget {
   }
 
   /**
-   * Automatically updates applications older than 30 days to 'No Response' status.
+   * Automatically updates applications older than configured interval to 'No Response' status.
    * Only updates applications in 'applied' or 'in progress' states to avoid overwriting
    * final statuses like 'rejected' or 'offered'.
    * 
    * Design decisions:
-   * - 30-day threshold from applied date
+   * - Configurable threshold based on settings
    * - Only updates non-final statuses to preserve user decisions
    * - Bulk update with single event emission for efficiency
    * - No file save to avoid performance impact during initialization
    */
-  private updateOldApplicationsStatus(): void {
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  private async updateOldApplicationsStatus(): Promise<void> {
+    // Skip if auto-update is disabled
+    if (!this.autoUpdateEnabled) {
+      return;
+    }
+
+    const thresholdDate = new Date();
+    thresholdDate.setDate(thresholdDate.getDate() - this.autoUpdateInterval);
     
     // Find 'No Response' status from defaults
     const noResponseStatus = defaultStatusItems[4] // No Response is the 5th item
@@ -422,7 +427,7 @@ export class ApplicationHandler extends EventTarget {
     
     this.applications.forEach(app => {
       const appliedDate = new Date(app.appliedDate);
-      const isOld = appliedDate < thirtyDaysAgo;
+      const isOld = appliedDate < thresholdDate;
       const isUpdatable = updatableStatusTexts.some(
         statusText => app.status.text.toLowerCase().includes(statusText.toLowerCase())
       );
@@ -450,20 +455,20 @@ export class ApplicationHandler extends EventTarget {
         })
       );
 
-      // Trigger a save to persist changes
-      this.saveApplicationsToFile().catch(error => {
-        console.error('Failed to save after auto-update:', error);
+      // Save the updated applications to file
+      await this.saveApplicationsToFile().catch(error => {
+        console.error('Failed to save auto-updated applications:', error);
       });
-
     }
   }
+
   /**
    * Manually triggers the automatic status update for old applications.
    * Useful for scheduled updates or user-triggered maintenance.
    * Persists changes to file unlike the initialization auto-update.
    */
   public async updateOldApplications(): Promise<number> {
-    this.updateOldApplicationsStatus();
+    await this.updateOldApplicationsStatus();
     
     // Calculate how many were updated by checking for recent status changes
     const updatedCount = this.applications.filter(app => 
@@ -481,6 +486,64 @@ export class ApplicationHandler extends EventTarget {
     }
     
     return updatedCount;
+  }
+
+  /**
+   * Updates the auto-update configuration based on settings.
+   * This method should be called when settings change to update behavior.
+   */
+  public updateAutoUpdateConfig(enabled: boolean, intervalDays: number): void {
+    this.autoUpdateEnabled = enabled;
+    this.autoUpdateInterval = intervalDays;
+    console.log(`Auto-update enabled: ${this.autoUpdateEnabled}, Interval: ${this.autoUpdateInterval} days`);
+  }
+
+  /**
+   * Sets the default status for new applications based on settings.
+   */
+  public updateDefaultStatus(statusText: string): void {
+    const status = defaultStatusItems.find(item => item.text === statusText);
+    if (status) {
+      this.defaultStatus = status;
+    }
+  }
+
+  /**
+   * Triggers auto-update based on current settings.
+   * This should be called when settings are updated to apply the new configuration.
+   */
+  public async triggerAutoUpdateFromSettings(): Promise<void> {
+    if (this.autoUpdateEnabled) {
+      console.log('Triggering auto-update from settings change');
+      await this.updateOldApplicationsStatus();
+    }
+  }
+
+  /**
+   * Manual trigger for auto-update - useful for testing and manual maintenance
+   * Returns the number of applications that were updated
+   */
+  public async manualAutoUpdate(): Promise<{ count: number; applications: Array<{ company: string; position: string }> }> {
+    const initialApplications = this.applications.map(app => ({ ...app }));
+    
+    await this.updateOldApplicationsStatus();
+    
+    // Compare to see what changed
+    const updatedApplications: Array<{ company: string; position: string }> = [];
+    this.applications.forEach(app => {
+      const original = initialApplications.find(orig => orig.id === app.id);
+      if (original && original.status.text !== app.status.text && app.status.text.toLowerCase().includes('no response')) {
+        updatedApplications.push({
+          company: app.company,
+          position: app.position
+        });
+      }
+    });
+    
+    return {
+      count: updatedApplications.length,
+      applications: updatedApplications
+    };
   }
 }
 

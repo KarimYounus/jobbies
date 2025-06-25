@@ -33,5 +33,8 @@ electron.contextBridge.exposeInMainWorld("electronAPI", {
   ensureCVAssets: () => electron.ipcRenderer.invoke("ensure-cv-assets"),
   saveImageFile: (fileName, fileBuffer) => electron.ipcRenderer.invoke("save-cv-image", fileName, fileBuffer),
   savePDFFile: (fileName, fileBuffer) => electron.ipcRenderer.invoke("save-cv-pdf", fileName, fileBuffer),
-  getCVImageUrl: (imagePath) => electron.ipcRenderer.invoke("get-cv-image-url", imagePath)
+  getCVImageUrl: (imagePath) => electron.ipcRenderer.invoke("get-cv-image-url", imagePath),
+  // Settings operations
+  loadSettings: () => electron.ipcRenderer.invoke("load-settings"),
+  saveSettings: (settings) => electron.ipcRenderer.invoke("save-settings", settings)
 });
