@@ -12,6 +12,7 @@ export type ApplicationHandlerEvent =
   | "application-added"
   | "application-updated"
   | "application-deleted"
+  | "applications-auto-updated"
   | "data-error";
 
 /**
@@ -62,10 +63,12 @@ export class ApplicationHandler extends EventTarget {
   public async initialize(): Promise<void> {
     if (this.isInitialized) {
       return;
-    }
-
-    try {
+    }    try {
       await this.loadApplicationsFromFile();
+      
+      // Auto-update old applications after loading
+      this.updateOldApplicationsStatus();
+      
       this.isInitialized = true;
       this.dispatchEvent(new CustomEvent("applications-loaded"));
       console.log("Applications loaded successfully from file.");
@@ -75,10 +78,13 @@ export class ApplicationHandler extends EventTarget {
       console.warn(
         "Failed to load applications from file, using fallback data:",
         error
-      );
-      // Fallback to placeholder data for development
+      );      // Fallback to placeholder data for development
       this.applications = [...applicationCollection];
       this.rebuildStatusGroups();
+      
+      // Auto-update old applications even with fallback data
+      this.updateOldApplicationsStatus();
+      
       this.isInitialized = true;
       this.dispatchEvent(new CustomEvent("data-error", { detail: error }));
     }
@@ -385,6 +391,90 @@ export class ApplicationHandler extends EventTarget {
     } catch (error) {
       throw new Error(`Failed to save applications to file: ${error}`);
     }
+  }
+
+  /**
+   * Automatically updates applications older than 30 days to 'No Response' status.
+   * Only updates applications in 'applied' or 'in progress' states to avoid overwriting
+   * final statuses like 'rejected' or 'offered'.
+   * 
+   * Design decisions:
+   * - 30-day threshold from applied date
+   * - Only updates non-final statuses to preserve user decisions
+   * - Bulk update with single event emission for efficiency
+   * - No file save to avoid performance impact during initialization
+   */
+  private updateOldApplicationsStatus(): void {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    
+    // Find 'No Response' status from defaults
+    const noResponseStatus = defaultStatusItems[4] // No Response is the 5th item
+    
+    if (!noResponseStatus) {
+      console.warn('No Response status not found in default statuses');
+      return;
+    }
+    
+    // Define statuses that should be auto-updated (not final states)
+    const updatableStatusTexts = ['Applied', 'Assessment Stage'];
+    const updatedApplications: Array<{company: string, position: string}> = [];
+    
+    this.applications.forEach(app => {
+      const appliedDate = new Date(app.appliedDate);
+      const isOld = appliedDate < thirtyDaysAgo;
+      const isUpdatable = updatableStatusTexts.some(
+        statusText => app.status.text.toLowerCase().includes(statusText.toLowerCase())
+      );
+      
+      if (isOld && isUpdatable) {
+        app.status = noResponseStatus;
+        updatedApplications.push({
+          company: app.company,
+          position: app.position
+        });
+      }
+    });
+    
+    if (updatedApplications.length > 0) {
+      this.rebuildStatusGroups();
+      console.log(`Auto-updated ${updatedApplications.length} old applications to 'No Response' status`);
+      
+      // Emit update event with detailed application info
+      this.dispatchEvent(
+        new CustomEvent("applications-auto-updated", { 
+          detail: { 
+            count: updatedApplications.length,
+            applications: updatedApplications
+          } 
+        })
+      );
+    }
+  }
+  /**
+   * Manually triggers the automatic status update for old applications.
+   * Useful for scheduled updates or user-triggered maintenance.
+   * Persists changes to file unlike the initialization auto-update.
+   */
+  public async updateOldApplications(): Promise<number> {
+    this.updateOldApplicationsStatus();
+    
+    // Calculate how many were updated by checking for recent status changes
+    const updatedCount = this.applications.filter(app => 
+      app.status.text.toLowerCase().includes('no response')
+    ).length;
+    
+    if (updatedCount > 0) {
+      try {
+        await this.saveApplicationsToFile();
+        console.log(`Manually updated and saved ${updatedCount} old applications`);
+      } catch (error) {
+        console.error('Failed to save after manual update:', error);
+        throw error;
+      }
+    }
+    
+    return updatedCount;
   }
 }
 

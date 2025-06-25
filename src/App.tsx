@@ -9,6 +9,7 @@ import ApplicationWindow from "./components/ApplicationWindow/ApplicationWindow"
 import { StatusItem } from "./types/status-types";
 import { SortOverlay } from "./components/SortOverlay";
 import { SortConfig } from "./types/sort-types";
+import { AutoUpdatePopup } from "./components/AutoUpdatePopup";
 
 function App() {
   // State to hold the applications grouped by status
@@ -20,7 +21,12 @@ function App() {
   const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
   const [newApplication, setNewApplication] = useState<JobApplication | null>(
     null
-  );  // Handler for creating a new application
+  );
+  
+  // State for auto-update popup
+  const [showAutoUpdatePopup, setShowAutoUpdatePopup] = useState(false);
+  const [autoUpdateCount, setAutoUpdateCount] = useState(0);
+  const [autoUpdateApplications, setAutoUpdateApplications] = useState<Array<{company: string, position: string}>>([]);// Handler for creating a new application
   const handleAddJobClick = () => {
     const freshApplication = applicationHandler.createNewApplication();
     setNewApplication(freshApplication);
@@ -37,11 +43,23 @@ function App() {
         console.error("Failed to initialize data:", error);
         setIsLoading(false);
       }
-    };
-
-    // Event listeners for data changes to keep UI reactive
+    };    // Event listeners for data changes to keep UI reactive
     const handleDataChange = () => {
       setApplicationsByStatus(applicationHandler.getApplicationsByStatus(sortConfig || undefined));
+    };
+
+    // Event listener for auto-updates
+    const handleAutoUpdate = (event: CustomEvent) => {
+      const count = event.detail?.count || 0;
+      const applications = event.detail?.applications || [];
+      
+      if (count > 0) {
+        setAutoUpdateCount(count);
+        setAutoUpdateApplications(applications);
+        setShowAutoUpdatePopup(true);
+      }
+      // Also refresh the applications display
+      handleDataChange();
     };
 
     applicationHandler.addEventListener(
@@ -56,6 +74,10 @@ function App() {
     applicationHandler.addEventListener(
       "application-deleted",
       handleDataChange
+    );
+    applicationHandler.addEventListener(
+      "applications-auto-updated",
+      handleAutoUpdate as EventListener
     );
 
     initializeData();
@@ -73,11 +95,15 @@ function App() {
       applicationHandler.removeEventListener(
         "application-updated",
         handleDataChange
-      );
-      applicationHandler.removeEventListener(
+      );      applicationHandler.removeEventListener(
         "application-deleted",
         handleDataChange
-      );    };
+      );
+      applicationHandler.removeEventListener(
+        "applications-auto-updated",
+        handleAutoUpdate as EventListener
+      );
+    };
   }, [sortConfig]); // Re-run when sort configuration changes
 
   // Show loading state while data is being initialized
@@ -166,7 +192,13 @@ function App() {
         onClose={() => setIsSortOverlayOpen(false)}        onSort={(sort) => {
           setSortConfig(sort);
           // Keep overlay open for multiple selections
-        }}
+        }}      />
+      
+      <AutoUpdatePopup
+        isVisible={showAutoUpdatePopup}
+        count={autoUpdateCount}
+        applications={autoUpdateApplications}
+        onClose={() => setShowAutoUpdatePopup(false)}
       />
     </motion.div>
   );
