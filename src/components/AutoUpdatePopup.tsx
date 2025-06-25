@@ -68,7 +68,7 @@ export const AutoUpdatePopup: React.FC<AutoUpdatePopupProps> = ({
           <motion.div
             className="bg-gradient-to-r from-amber-500/90 to-orange-500/90 backdrop-blur-lg rounded-lg shadow-xl p-4 max-w-sm cursor-pointer"
             onClick={showDetails ? onClose : () => setShowDetails(true)}
-            whileHover={{ scale: 1.02 }}
+            whileHover={{ scale: 1.1, x: -5, y: -5 }}
             whileTap={{ scale: 0.98 }}
             layout
           >

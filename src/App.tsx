@@ -27,11 +27,13 @@ function App() {
   const [showAutoUpdatePopup, setShowAutoUpdatePopup] = useState(false);
   const [autoUpdateCount, setAutoUpdateCount] = useState(0);
   const [autoUpdateApplications, setAutoUpdateApplications] = useState<Array<{company: string, position: string}>>([]);// Handler for creating a new application
+  
   const handleAddJobClick = () => {
     const freshApplication = applicationHandler.createNewApplication();
     setNewApplication(freshApplication);
     setIsJobViewOpen(true);
   };
+  
   // Initialize the collection handler and set up event listeners
   useEffect(() => {
     const initializeData = async () => {
@@ -132,11 +134,10 @@ function App() {
         transition={{ duration: 0.5, ease: [0.85, 0, 0.15, 1] }}
       >
         {/* Logo */}
-        <div className="w-10"></div>
         <motion.img
           src="src/assets/images/logo-trans.png"
           alt="Logo"
-          className="flex h-20"
+          className="flex h-20 p-2"
           initial={{ scale: 0.8 }}
           animate={{ scale: 1 }}
           transition={{ duration: 0.3, type: "spring", stiffness: 300 }}

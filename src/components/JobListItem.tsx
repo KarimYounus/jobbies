@@ -9,10 +9,9 @@ interface JobListItemProps {
   onClick?: (job: JobApplication) => void;
 }
 
-const JobListItem: React.FC<JobListItemProps> = ({
-  job,
-  onClick: onClick,
-}) => {
+const JobListItem: React.FC<JobListItemProps> = ({ job, onClick: onClick }) => {
+  const daysAgo = Math.floor((new Date().getTime() - new Date(job.appliedDate).getTime()) / (1000 * 60 * 60 * 24));
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -42,11 +41,7 @@ const JobListItem: React.FC<JobListItemProps> = ({
             <div>
               {/* <p className="text-sm text-gray-600">Days Since App.</p> */}
               <p className="text-sm text-black font-medium">
-                {Math.floor(
-                  (new Date().getTime() - new Date(job.appliedDate).getTime()) /
-                    (1000 * 60 * 60 * 24)
-                )}{" "}
-                days ago
+                {daysAgo} {daysAgo === 1 ? "day" : "days"} ago
               </p>
             </div>
           </div>

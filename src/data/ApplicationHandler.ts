@@ -449,6 +449,12 @@ export class ApplicationHandler extends EventTarget {
           } 
         })
       );
+
+      // Trigger a save to persist changes
+      this.saveApplicationsToFile().catch(error => {
+        console.error('Failed to save after auto-update:', error);
+      });
+
     }
   }
   /**
