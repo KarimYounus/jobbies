@@ -18,6 +18,7 @@ import SettingsWindow from "./components/SettingsWindow/SettingsWindow";
 import { SettingsProvider, useSettings } from "./components/SettingsWindow/SettingsContext";
 import { useApplicationData } from "./hooks/useApplicationData";
 import { useSettingsIntegration } from "./hooks/useSettingsIntegration";
+import CVCollectionWindow from "./components/CVCollection/CVCollectionWindow";
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function AppContent() {
   const [isJobViewOpen, setIsJobViewOpen] = useState(false);
   const [isSortOverlayOpen, setIsSortOverlayOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isCVCollectionOpen, setIsCVCollectionOpen] = useState(false);
   const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
 
   // Custom hooks for complex logic
@@ -113,7 +115,7 @@ function AppContent() {
             caption="CV Collection"
             className="p-2 mx-3 hover:bg-teal-200 rounded-lg transition-colors cursor-pointer"
             iconClassName="text-gray-200 hover:text-gray-800"
-            onClick={() => {}}
+            onClick={() => setIsCVCollectionOpen(true)}
           />
           <AnimatedButton
             icon={mdiCogOutline}
@@ -168,6 +170,10 @@ function AppContent() {
       <SettingsWindow
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
+      />
+      <CVCollectionWindow
+        isOpen={isCVCollectionOpen}
+        onClose={() => setIsCVCollectionOpen(false)}
       />
     </motion.div>
   );
