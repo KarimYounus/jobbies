@@ -28,8 +28,6 @@ export type CVHandlerEvent =
 export class CVHandler extends EventTarget {
   private static instance: CVHandler | null = null;
   private cvs: CurriculumVitae[] = [];
-  private readonly dataFilePath: string;
-  private readonly assetsPath: string;
   private isInitialized: boolean = false;
 
   /**
@@ -38,8 +36,6 @@ export class CVHandler extends EventTarget {
    */
   private constructor() {
     super();
-    this.dataFilePath = 'cv-collection.json';
-    this.assetsPath = 'cv-assets';
   }
 
   /**

@@ -32,7 +32,6 @@ export class ApplicationHandler extends EventTarget {
   private static instance: ApplicationHandler | null = null;
   private applications: JobApplication[] = [];
   private applicationsByStatus: Map<StatusItem, JobApplication[]> = new Map();
-  private readonly dataFilePath: string;
   private isInitialized: boolean = false;
   private autoUpdateEnabled: boolean = true;
   private autoUpdateInterval: number = 30; // Default to 30 days
@@ -42,18 +41,17 @@ export class ApplicationHandler extends EventTarget {
    * Private constructor to enforce singleton pattern.
    * The data file path is configurable to support different environments (dev/prod).
    */
-  private constructor(dataFilePath: string = "job-applications.json") {
+  private constructor() {
     super();
-    this.dataFilePath = dataFilePath;
   }
 
   /**
    * Gets the singleton instance of CollectionHandler.
    * Creates a new instance if none exists.
    */
-  public static getInstance(dataFilePath?: string): ApplicationHandler {
+  public static getInstance(): ApplicationHandler {
     if (!ApplicationHandler.instance) {
-      ApplicationHandler.instance = new ApplicationHandler(dataFilePath);
+      ApplicationHandler.instance = new ApplicationHandler();
     }
     return ApplicationHandler.instance;
   }

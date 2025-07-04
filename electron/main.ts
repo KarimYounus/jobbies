@@ -1,10 +1,8 @@
 import { app, BrowserWindow, ipcMain } from "electron";
-import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { promises as fs } from "fs";
 import path from "node:path";
 
-const require = createRequire(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // The built directory structure
@@ -83,7 +81,7 @@ function setupApplicationHandlerIPC() {
   // IPC Handler: Save applications to the JSON file
   ipcMain.handle(
     "save-applications",
-    async (event, applications: any[]): Promise<void> => {
+    async (_event, applications: any[]): Promise<void> => {
       try {
         const filePath = getDataFilePath();
         const data = JSON.stringify(applications, null, 2);
@@ -137,7 +135,7 @@ function setupCVHandlerIPC() {
   });
 
   // IPC Handler: Save CVs to the JSON file
-  ipcMain.handle("save-cvs", async (event, cvs: any[]): Promise<void> => {
+  ipcMain.handle("save-cvs", async (_event, cvs: any[]): Promise<void> => {
     try {
       const filePath = getCVDataFilePath();
 
