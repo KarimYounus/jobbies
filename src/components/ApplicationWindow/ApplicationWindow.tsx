@@ -1,18 +1,14 @@
-import React, { useEffect, createContext, useState } from "react";
+import React, { createContext, useState } from "react";
 import Header from "./Header";
 import ViewContent from "./ViewContent/ViewContent";
 import EditContent from "./EditContent/EditContent";
 import ConfirmationDialog from "../General/ConfirmationDialog";
 import { motion, AnimatePresence } from "framer-motion";
 import { JobApplication } from "../../types/job-application-types";
-import { applicationHandler } from "../../data/ApplicationHandler";
 import { StatusItem } from "../../types/status-types";
 import { useSettings } from "../SettingsWindow/SettingsContext";
 import { useConfirmationDialog } from "../../hooks/useConfirmationDialog";
-import {
-  validateRequiredFields,
-  detectApplicationChanges,
-} from "../../utils/applicationValidation";
+import { useApplicationPersistence } from "../../hooks/useApplicationPersistence";
 import {
   createUnsavedChangesDialog,
   createDeleteConfirmationDialog,
@@ -63,47 +59,34 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
   const deleteDialog = useConfirmationDialog();
   const validationDialog = useConfirmationDialog();
 
-  const [jobApplication, setJobApplication] = useState<JobApplication | null>(
-    job
-  );
+  // Persistence hook - handles all data operations
+  const persistence = useApplicationPersistence({
+    initialApplication: job,
+    isNewApplication: createNew,
+    onSave: (_savedApplication) => {
+      // UI-specific post-save actions
+      setIsEditing(false);
+    },
+    onDelete: () => {
+      // Navigate away after successful deletion
+      onClose();
+    },
+    onStatusChange: (updatedApplication) => {
+      // Optional: Handle status change success
+      console.log("Status updated:", updatedApplication.status);
+    }
+  });
+
+  // UI-specific state that doesn't belong in the persistence hook
   const [isEditing, setIsEditing] = useState(createNew);
-  const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  // State to track unsaved changes and initial job state
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [initialJobState, setInitialJobState] = useState<JobApplication | null>(
-    job
-  );
-
-  useEffect(() => {
-    setJobApplication(job);
-    setInitialJobState(job);
-    setHasUnsavedChanges(false);
-  }, [job]);
-
-  // Field update method for application data edits
-  // This method updates a specific field in the job application state and tracks changes
-  const updateField = (field: keyof JobApplication, value: any) => {
-    setJobApplication((prev) => {
-      if (!prev) return null;
-
-      const updated = { ...prev, [field]: value };
-
-      // Update change tracking using utility function
-      setHasUnsavedChanges(detectApplicationChanges(updated, initialJobState));
-
-      return updated;
-    });
-  };
 
   // Enhanced close handler with unsaved changes detection
   const handleCloseWithConfirmation = () => {
-    if (isEditing && hasUnsavedChanges) {
+    if (isEditing && persistence.hasUnsavedChanges) {
       const dialogConfig = createUnsavedChangesDialog(
         handleSaveAndClose,
         handleDiscardChanges,
-        isSaving
+        persistence.isLoading
       );
       unsavedChangesDialog.showDialog(dialogConfig);
     } else {
@@ -114,70 +97,25 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
   // Handle forced close (discard changes)
   const handleDiscardChanges = () => {
     unsavedChangesDialog.hideDialog();
-    setHasUnsavedChanges(false);
+    persistence.discardChanges();
     onClose();
   };
 
-  // Separate handler for status changes
-  // This method handles status changes and saves the updated application immediately
+  // Status change handler using the persistence hook
   const handleStatusChange = async (newStatus: StatusItem) => {
-    if (!jobApplication || createNew) return; // Don't auto-save status changes for new applications
+    await persistence.updateStatus(newStatus);
+  };
 
-    try {
-      const updatedJob = { ...jobApplication, status: newStatus }; // Save immediately via ApplicationHandler
-      await applicationHandler.updateApplication(updatedJob);
-
-      // Update local state
-      setJobApplication(updatedJob);
-    } catch (err) {
-      setError(
-        `Failed to update status: ${
-          err instanceof Error ? err.message : "Unknown error"
-        }`
-      );
-    }
-  }; // Explicit save for form edits (EditContent) with validation
+  // Save handler with validation dialog integration
   const handleSave = async () => {
-    if (!jobApplication) return;
-
-    // Check required fields first
-    const missingFields = validateRequiredFields(jobApplication);
-    if (missingFields.length > 0) {
+    const success = await persistence.save();
+    
+    if (!success && persistence.validationErrors.length > 0) {
       const dialogConfig = createValidationErrorDialog(
-        missingFields,
+        persistence.validationErrors,
         validationDialog.hideDialog
       );
       validationDialog.showDialog(dialogConfig);
-      return;
-    }
-
-    try {
-      setIsSaving(true);
-      setError(null);
-
-      if (createNew) {
-        // Creating a new application - use addApplication
-        const savedApplication = await applicationHandler.addApplication(
-          jobApplication
-        );
-        setJobApplication(savedApplication);
-        setInitialJobState(savedApplication);
-      } else {
-        // Updating existing application - use updateApplication
-        await applicationHandler.updateApplication(jobApplication);
-        setInitialJobState(jobApplication);
-      }
-
-      setHasUnsavedChanges(false);
-      setIsEditing(false);
-    } catch (err) {
-      setError(
-        `Failed to save: ${
-          err instanceof Error ? err.message : "Unknown error"
-        }`
-      );
-    } finally {
-      setIsSaving(false);
     }
   };
 
@@ -185,12 +123,12 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
   const handleSaveAndClose = async () => {
     unsavedChangesDialog.hideDialog();
     await handleSave();
-    if (!error) {
+    if (!persistence.error) {
       onClose();
     }
   };
 
-  // Delete operation
+  // Delete operation with confirmation handling
   const handleDeleteWithConfirmation = async () => {
     // Check if confirmation is required from settings
     if (settings.confirmDeleteActions) {
@@ -206,32 +144,27 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
     }
   };
 
-  // Handle delete and close
+  // Handle delete operation
   const handleDeleteAndClose = async () => {
-    if (!jobApplication) return;
-    try {
-      await applicationHandler.deleteApplication(jobApplication.id);
-      onClose(); // Close window after successful deletion
-    } catch (err) {
-      setError(
-        `Failed to delete: ${
-          err instanceof Error ? err.message : "Unknown error"
-        }`
-      );
-    }
+    await persistence.delete();
+    // Note: onClose is called via the persistence hook's onDelete callback
   };
 
   return (
     <ApplicationWindowContext.Provider
       value={{
-        jobApplication,
-        setJobApplication,
+        jobApplication: persistence.application,
+        setJobApplication: (_job: JobApplication) => {
+          // This is now handled by the persistence hook
+          // We can either remove this or use it for specific cases
+          console.warn("setJobApplication called - consider using persistence.updateField instead");
+        },
         isEditing,
         setIsEditing,
-        updateField,
+        updateField: persistence.updateField,
         onStatusChange: handleStatusChange,
-        isSaving,
-        error,
+        isSaving: persistence.isLoading,
+        error: persistence.error,
       }}
     >
       <AnimatePresence>
@@ -244,7 +177,7 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
             className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-2xl"
           >
             <div className="rounded-lg shadow-xl w-full max-w-4xl h-full max-h-[90vh] flex flex-col mx-4 overflow-hidden">
-              {jobApplication && (
+              {persistence.application && (
                 <Header
                   onClose={handleCloseWithConfirmation}
                   onSave={handleSave}
