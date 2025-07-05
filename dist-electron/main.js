@@ -10,11 +10,12 @@ const RENDERER_DIST = path.join(process.env.APP_ROOT, "dist");
 process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, "public") : RENDERER_DIST;
 let win;
 function createWindow() {
+  const iconPath = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, "public", "Iocn.png") : path.join(process.env.APP_ROOT, "dist", "Iocn.png");
   win = new BrowserWindow({
     width: 910,
     height: 1080,
     transparent: false,
-    icon: path.join(process.env.VITE_PUBLIC, "Iocn.png"),
+    icon: iconPath,
     title: "Jobbies",
     webPreferences: {
       preload: path.join(__dirname, "preload.mjs")

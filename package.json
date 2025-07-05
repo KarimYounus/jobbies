@@ -1,11 +1,14 @@
 {
   "name": "jobbies",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build && electron-builder",
+    "build:portable": "tsc && vite build && electron-builder --config.win.target=portable",
+    "build:installer": "tsc && vite build && electron-builder --config.win.target=nsis",
+    "build:all": "tsc && vite build && electron-builder --config.win.target=nsis --config.win.target=portable",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },

@@ -36,7 +36,7 @@ export const defaultSettings: SettingsConfig = {
     field: 'appliedDate',
     order: 'desc'
   },
-  theme: 'light'
+  theme: 'dark'
 };
 
 /**

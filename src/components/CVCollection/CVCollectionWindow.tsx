@@ -123,7 +123,7 @@ const CVCollectionWindow: React.FC<CVCollectionWindowProps> = ({
               </h2>
             </div>
             <div className="flex items-center space-x-2">
-              <AnimatedButton
+              {/* <AnimatedButton
                 icon={mdiTextBoxPlus}
                 caption="Add New CV"
                 className="px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors"
@@ -132,7 +132,7 @@ const CVCollectionWindow: React.FC<CVCollectionWindowProps> = ({
                   // TODO: Implement add new CV functionality
                   console.log("Add new CV clicked");
                 }}
-              />
+              /> */}
               <AnimatedButton
                 icon={mdiClose}
                 caption="Close"
@@ -200,7 +200,7 @@ const CVCollectionWindow: React.FC<CVCollectionWindowProps> = ({
                   <p className="text-gray-500 mb-4">
                     Get started by creating your first CV
                   </p>
-                  <AnimatedButton
+                  {/* <AnimatedButton
                     icon={mdiTextBoxPlus}
                     caption="Create Your First CV"
                     className="px-6 py-3 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors"
@@ -209,7 +209,7 @@ const CVCollectionWindow: React.FC<CVCollectionWindowProps> = ({
                       // TODO: Implement add new CV functionality
                       console.log("Create first CV clicked");
                     }}
-                  />
+                  /> */}
                 </motion.div>
               </div>
             ) : (

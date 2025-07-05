@@ -3,7 +3,7 @@
   "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
   "appId": "com.karimYounus.jobbies",
   "asar": true,
-  "productName": "Job Application Manager",
+  "productName": "Jobbies",
   "directories": {
     "output": "release/${version}"
   },
@@ -11,22 +11,39 @@
     "dist",
     "dist-electron"
   ],
+  "extraResources": [
+    {
+      "from": "public/Iocn.png",
+      "to": "Iocn.png"
+    }
+  ],
   "mac": {
+    "icon": "public/Iocn.png",
     "target": [
       "dmg"
     ],
     "artifactName": "${productName}-Mac-${version}-Installer.${ext}"
   },
   "win": {
+    "icon": "public/Iocn.png",
     "target": [
       {
         "target": "nsis",
         "arch": [
           "x64"
         ]
+      },
+      {
+        "target": "portable",
+        "arch": [
+          "x64"
+        ]
       }
     ],
     "artifactName": "${productName}-Windows-${version}-Setup.${ext}"
+  },
+  "portable": {
+    "artifactName": "${productName}-Windows-${version}-Portable.${ext}"
   },
   "nsis": {
     "oneClick": false,
@@ -35,6 +52,7 @@
     "deleteAppDataOnUninstall": false
   },
   "linux": {
+    "icon": "public/Iocn.png",
     "target": [
       "AppImage"
     ],

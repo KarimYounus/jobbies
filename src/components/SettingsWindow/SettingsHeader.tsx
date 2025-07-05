@@ -1,7 +1,8 @@
 import React from "react";
 import Icon from "@mdi/react";
-import { mdiClose, mdiRestore, mdiLoading } from "@mdi/js";
+import { mdiClose, mdiRestore, mdiLoading, mdiCogOutline } from "@mdi/js";
 import AnimatedButton from "../General/AnimatedButton";
+import { motion } from "framer-motion";
 
 interface SettingsHeaderProps {
   onClose: () => void;
@@ -29,6 +30,13 @@ const SettingsHeader: React.FC<SettingsHeaderProps> = ({
     <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gray-50">
       {/* Title Section */}
       <div className="flex items-center space-x-3">
+        <motion.div
+          className="p-2 bg-teal-100/50 rounded-lg"
+          whileHover={{ scale: 1.05 }}
+          transition={{ type: "spring", stiffness: 300 }}
+        >
+          <Icon path={mdiCogOutline} size={1.5} className="text-gray-600" />
+        </motion.div>
         <h2 className="text-xl font-semibold text-gray-800">Settings</h2>
 
         {/* Status Indicators */}
@@ -48,11 +56,11 @@ const SettingsHeader: React.FC<SettingsHeaderProps> = ({
       <div className="flex items-center space-x-3">
         {/* Reset to Defaults Button */}
         <AnimatedButton
-            onClick={onReset}
-            className="flex items-center justify-center w-10 h-10 text-gray-600 hover:text-gray-800 hover:bg-orange-300 rounded-md transition-colors"
-            icon={mdiRestore}
-            caption="Reset Settings"
-            disabled={isSaving}
+          onClick={onReset}
+          className="flex items-center justify-center w-10 h-10 text-gray-600 hover:text-gray-800 hover:bg-orange-300 rounded-md transition-colors"
+          icon={mdiRestore}
+          caption="Reset Settings"
+          disabled={isSaving}
         />
 
         {/* Close Button */}

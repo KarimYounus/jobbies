@@ -20,6 +20,7 @@ import { useApplicationData } from "./hooks/useApplicationData";
 import { useSettingsIntegration } from "./hooks/useSettingsIntegration";
 import CVCollectionWindow from "./components/CVCollection/CVCollectionWindow";
 import { initializeTheme } from "./utils/themeManager";
+import logoImage from "./assets/images/logo-trans.png";
 
 function App() {
   return (
@@ -94,7 +95,7 @@ function AppContent() {
       >
         {/* Logo */}
         <motion.img
-          src="src/assets/images/logo-trans.png"
+          src={logoImage}
           alt="Logo"
           className="flex h-20 p-2"
           initial={{ scale: 0.8 }}
@@ -107,28 +108,28 @@ function AppContent() {
           <AnimatedButton
             icon={mdiNotePlusOutline}
             caption="Add Job"
-            className="p-2 hover:bg-teal-200 rounded-4xl transition-colors cursor-pointer"
+            className="p-2 hover:bg-cyan-800 rounded-4xl transition-colors cursor-pointer"
             iconClassName="text-gray-100"
             onClick={handleAddJobClick}
           />
           <AnimatedButton
             icon={mdiSort}
             caption="Sort Applications"
-            className="p-2 hover:bg-teal-200 rounded-4xl transition-colors cursor-pointer"
+            className="p-2 hover:bg-teal-800 rounded-4xl transition-colors cursor-pointer"
             iconClassName="text-gray-100"
             onClick={() => setIsSortOverlayOpen(true)}
           />
           <AnimatedButton
             icon={mdiTextBoxOutline}
             caption="CV Collection"
-            className="p-2 hover:bg-teal-200 rounded-4xl transition-colors cursor-pointer"
+            className="p-2 hover:bg-emerald-800 rounded-4xl transition-colors cursor-pointer"
             iconClassName="text-gray-100"
             onClick={() => setIsCVCollectionOpen(true)}
           />
           <AnimatedButton
             icon={mdiCogOutline}
             caption="Settings"
-            className="p-2 hover:bg-teal-200 rounded-4xl transition-colors cursor-pointer"
+            className="p-2 hover:bg-green-800 rounded-4xl transition-colors cursor-pointer"
             iconClassName="text-gray-100"
             onClick={() => setIsSettingsOpen(true)}
           />

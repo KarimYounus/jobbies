@@ -28,4 +28,9 @@ export default defineConfig({
     }),
     tailwindcss(),
   ],
+  publicDir: 'public',
+  build: {
+    outDir: 'dist',
+    emptyOutDir: true,
+  },
 })

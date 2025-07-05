@@ -28,11 +28,16 @@ process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL
 let win: BrowserWindow | null;
 
 function createWindow() {
+  // Better icon path resolution
+  const iconPath = VITE_DEV_SERVER_URL 
+    ? path.join(process.env.APP_ROOT, "public", "Iocn.png")
+    : path.join(process.env.APP_ROOT, "dist", "Iocn.png");
+
   win = new BrowserWindow({
     width: 910,
     height: 1080,
     transparent: false,
-    icon: path.join(process.env.VITE_PUBLIC, "Iocn.png"),
+    icon: iconPath,
     title: "Jobbies",
     webPreferences: {
       preload: path.join(__dirname, "preload.mjs"),
