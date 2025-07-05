@@ -5,6 +5,7 @@ import SettingsHeader from "./SettingsHeader";
 import SettingItem from "./SettingItem";
 import ConfirmationDialog from "../General/ConfirmationDialog";
 import { useConfirmationDialog } from "../../hooks/useConfirmationDialog";
+import { createResetSettingsDialog } from "../../utils/dialogConfigs";
 import { defaultStatusItems } from "../../types/status-types";
 
 interface SettingsWindowProps {

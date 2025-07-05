@@ -7,6 +7,8 @@ import { mdiMagnifyExpand, mdiTrashCan } from "@mdi/js";
 import { FullscreenCV } from "../../ViewContent/CVImage";
 import { useCVImageUrl } from "../../../../hooks/useCVImageUrl";
 import { cvHandler } from "../../../../data/CVHandler";
+import { useConfirmationDialog } from "../../../../hooks/useConfirmationDialog";
+import { createDeleteConfirmationDialog } from "../../../../utils/dialogConfigs";
 
 interface CVCardProps {
   cv: CurriculumVitae;
@@ -24,9 +26,8 @@ const CVCard: React.FC<CVCardProps> = ({
   onDelete 
 }) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
-  const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
-  const [isDeleting, setIsDeleting] = React.useState(false);
   const imageUrl = useCVImageUrl(cv.imagePreviewPath);
+  const deleteDialog = useConfirmationDialog();
 
   // Calculate dimensions based on enlarged prop
   const cardHeight = enlarged ? "h-80" : "h-60";
@@ -35,21 +36,24 @@ const CVCard: React.FC<CVCardProps> = ({
   const handleDelete = async () => {
     if (!onDelete) return;
     
-    setIsDeleting(true);
     try {
       await cvHandler.deleteCV(cv.id);
       onDelete(cv);
-      setShowDeleteDialog(false);
+      deleteDialog.hideDialog();
     } catch (error) {
       console.error("Failed to delete CV:", error);
       // You might want to show an error toast here
-    } finally {
-      setIsDeleting(false);
     }
   };
 
   const handleDeleteClick = () => {
-    setShowDeleteDialog(true);
+    const dialogConfig = createDeleteConfirmationDialog(
+      "CV",
+      handleDelete,
+      deleteDialog.hideDialog,
+      `Are you sure you want to delete "${cv.name}"? This action cannot be undone.`
+    );
+    deleteDialog.showDialog(dialogConfig);
   };
 
   const handleExpandClick = () => {
@@ -128,23 +132,13 @@ const CVCard: React.FC<CVCardProps> = ({
       </AnimatePresence>
 
       {/* Delete Confirmation Dialog */}
-      <ConfirmationDialog
-        isOpen={showDeleteDialog}
-        title="Delete CV"
-        message={`Are you sure you want to delete "${cv.name}"? This action cannot be undone.`}
-        onClose={() => setShowDeleteDialog(false)}
-        primaryButton={{
-          text: isDeleting ? "Deleting..." : "Delete",
-          onClick: handleDelete,
-          disabled: isDeleting,
-          className: "bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors font-medium"
-        }}
-        secondaryButton={{
-          text: "Cancel",
-          onClick: () => setShowDeleteDialog(false),
-          disabled: isDeleting
-        }}
-      />
+      {deleteDialog.config && (
+        <ConfirmationDialog
+          isOpen={deleteDialog.isOpen}
+          onClose={deleteDialog.hideDialog}
+          {...deleteDialog.config}
+        />
+      )}
     </>
   );
 };

@@ -10,6 +10,11 @@ import { StatusItem } from "../../types/status-types";
 import { useSettings } from "../SettingsWindow/SettingsContext";
 import { useConfirmationDialog } from "../../hooks/useConfirmationDialog";
 import { validateRequiredFields, detectApplicationChanges } from "../../utils/applicationValidation";
+import { 
+  createUnsavedChangesDialog, 
+  createDeleteConfirmationDialog, 
+  createValidationErrorDialog 
+} from "../../utils/dialogConfigs";
 
 interface ApplicationWindowProps {
   jobApplication: JobApplication | null;
@@ -91,20 +96,12 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
   // Enhanced close handler with unsaved changes detection
   const handleCloseWithConfirmation = () => {
     if (isEditing && hasUnsavedChanges) {
-      unsavedChangesDialog.showDialog({
-        title: "Unsaved Changes",
-        message: "You have unsaved changes. Would you like to save before closing?",
-        primaryButton: {
-          text: "Save & Close",
-          onClick: handleSaveAndClose,
-          disabled: isSaving,
-        },
-        secondaryButton: {
-          text: "Discard Changes",
-          onClick: handleDiscardChanges,
-          className: "bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-colors font-medium",
-        },
-      });
+      const dialogConfig = createUnsavedChangesDialog(
+        handleSaveAndClose,
+        handleDiscardChanges,
+        isSaving
+      );
+      unsavedChangesDialog.showDialog(dialogConfig);
     } else {
       onClose();
     }
@@ -142,32 +139,11 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
     // Check required fields first
     const missingFields = validateRequiredFields(jobApplication);
     if (missingFields.length > 0) {
-      validationDialog.showDialog({
-        title: "Missing Required Fields",
-        primaryButton: {
-          text: "Continue Editing",
-          onClick: validationDialog.hideDialog,
-        },
-        secondaryButton: {
-          text: "Cancel",
-          onClick: validationDialog.hideDialog,
-        },
-        children: (
-          <div className="space-y-2">
-            <p className="text-gray-600 text-sm">
-              The following fields are required:
-            </p>
-            <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
-              {missingFields.map((field) => (
-                <li key={field}>{field}</li>
-              ))}
-            </ul>
-            <p className="text-gray-600 text-sm mt-3">
-              Please complete these fields before saving.
-            </p>
-          </div>
-        ),
-      });
+      const dialogConfig = createValidationErrorDialog(
+        missingFields,
+        validationDialog.hideDialog
+      );
+      validationDialog.showDialog(dialogConfig);
       return;
     }
 
@@ -214,19 +190,12 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
   const handleDeleteWithConfirmation = async () => {
     // Check if confirmation is required from settings
     if (settings.confirmDeleteActions) {
-      deleteDialog.showDialog({
-        title: "Delete Application",
-        message: "Are you sure you want to delete this application? This action cannot be undone.",
-        primaryButton: {
-          text: "Cancel",
-          onClick: deleteDialog.hideDialog,
-        },
-        secondaryButton: {
-          text: "Delete",
-          onClick: handleDeleteAndClose,
-          className: "bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors font-medium",
-        },
-      });
+      const dialogConfig = createDeleteConfirmationDialog(
+        "Application",
+        handleDeleteAndClose,
+        deleteDialog.hideDialog
+      );
+      deleteDialog.showDialog(dialogConfig);
     } else {
       // Delete immediately without confirmation
       await handleDeleteAndClose();
