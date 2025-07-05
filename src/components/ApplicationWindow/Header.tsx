@@ -98,12 +98,12 @@ const Header: React.FC<HeaderProps> = ({ onClose, onDelete, onSave }) => {
           )}
           {isEditing && (
             <>
-              <AnimatedButton
+              {/* <AnimatedButton
                 icon={mdiFileCancel}
                 onClick={() => setIsEditing(false)}
                 caption="Discard changes"
                 className="p-2 hover:bg-red-100 rounded-full transition-colors cursor-pointer"
-              />
+              /> */}
               <AnimatedButton
                 icon={mdiContentSave}
                 onClick={onSave}

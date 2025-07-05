@@ -1,9 +1,7 @@
 import { app, BrowserWindow, ipcMain } from "electron";
-import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { promises } from "fs";
 import path from "node:path";
-createRequire(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 process.env.APP_ROOT = path.join(__dirname, "..");
 const VITE_DEV_SERVER_URL = process.env["VITE_DEV_SERVER_URL"];
@@ -51,7 +49,7 @@ function setupApplicationHandlerIPC() {
   });
   ipcMain.handle(
     "save-applications",
-    async (event, applications) => {
+    async (_event, applications) => {
       try {
         const filePath = getDataFilePath();
         const data = JSON.stringify(applications, null, 2);
@@ -94,7 +92,7 @@ function setupCVHandlerIPC() {
       throw error;
     }
   });
-  ipcMain.handle("save-cvs", async (event, cvs) => {
+  ipcMain.handle("save-cvs", async (_event, cvs) => {
     try {
       const filePath = getCVDataFilePath();
       await promises.mkdir(path.dirname(filePath), { recursive: true });

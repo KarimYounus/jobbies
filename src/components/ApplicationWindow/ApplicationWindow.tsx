@@ -8,6 +8,7 @@ import { JobApplication } from "../../types/job-application-types";
 import { applicationHandler } from "../../data/ApplicationHandler";
 import { StatusItem } from "../../types/status-types";
 import { useSettings } from "../SettingsWindow/SettingsContext";
+import { useConfirmationDialog } from "../../hooks/useConfirmationDialog";
 
 interface ApplicationWindowProps {
   jobApplication: JobApplication | null;
@@ -42,22 +43,22 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
   onClose,
   createNew = false,
 }) => {
+  if (!job) {
+    console.warn("No job application provided to ApplicationWindow");
+    return null;
+  };
   const { settings } = useSettings();
 
-  if (!job) return null;
-  const [jobApplication, setJobApplication] = useState<JobApplication | null>(
-    job
-  );
+  // Dialog hooks - each handles a specific dialog type
+  const unsavedChangesDialog = useConfirmationDialog();
+  const deleteDialog = useConfirmationDialog();
+  const validationDialog = useConfirmationDialog();
+
+
+  const [jobApplication, setJobApplication] = useState<JobApplication | null>(job);
   const [isEditing, setIsEditing] = useState(createNew);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // Dialog state management
-  const [showUnsavedChangesDialog, setShowUnsavedChangesDialog] =
-    useState(false);
-  const [showRequiredFieldsDialog, setShowRequiredFieldsDialog] =
-    useState(false);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   // State to track unsaved changes and initial job state
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -123,7 +124,20 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
   // Enhanced close handler with unsaved changes detection
   const handleCloseWithConfirmation = () => {
     if (isEditing && hasUnsavedChanges) {
-      setShowUnsavedChangesDialog(true);
+      unsavedChangesDialog.showDialog({
+        title: "Unsaved Changes",
+        message: "You have unsaved changes. Would you like to save before closing?",
+        primaryButton: {
+          text: "Save & Close",
+          onClick: handleSaveAndClose,
+          disabled: isSaving,
+        },
+        secondaryButton: {
+          text: "Discard Changes",
+          onClick: handleDiscardChanges,
+          className: "bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-colors font-medium",
+        },
+      });
     } else {
       onClose();
     }
@@ -131,7 +145,7 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
 
   // Handle forced close (discard changes)
   const handleDiscardChanges = () => {
-    setShowUnsavedChangesDialog(false);
+    unsavedChangesDialog.hideDialog();
     setHasUnsavedChanges(false);
     onClose();
   };
@@ -154,14 +168,39 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
         }`
       );
     }
-  }; // Explicit save for form edits (EditContent) with validation
+  };  // Explicit save for form edits (EditContent) with validation
   const handleSave = async () => {
     if (!jobApplication) return;
 
     // Check required fields first
     const missingFields = validateRequiredFields(jobApplication);
     if (missingFields.length > 0) {
-      setShowRequiredFieldsDialog(true);
+      validationDialog.showDialog({
+        title: "Missing Required Fields",
+        primaryButton: {
+          text: "Continue Editing",
+          onClick: validationDialog.hideDialog,
+        },
+        secondaryButton: {
+          text: "Cancel",
+          onClick: validationDialog.hideDialog,
+        },
+        children: (
+          <div className="space-y-2">
+            <p className="text-gray-600 text-sm">
+              The following fields are required:
+            </p>
+            <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
+              {missingFields.map((field) => (
+                <li key={field}>{field}</li>
+              ))}
+            </ul>
+            <p className="text-gray-600 text-sm mt-3">
+              Please complete these fields before saving.
+            </p>
+          </div>
+        ),
+      });
       return;
     }
 
@@ -197,7 +236,7 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
 
   // Save and close handler for unsaved changes dialog
   const handleSaveAndClose = async () => {
-    setShowUnsavedChangesDialog(false);
+    unsavedChangesDialog.hideDialog();
     await handleSave();
     if (!error) {
       onClose();
@@ -208,7 +247,19 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
   const handleDeleteWithConfirmation = async () => {
     // Check if confirmation is required from settings
     if (settings.confirmDeleteActions) {
-      setShowDeleteDialog(true);
+      deleteDialog.showDialog({
+        title: "Delete Application",
+        message: "Are you sure you want to delete this application? This action cannot be undone.",
+        primaryButton: {
+          text: "Cancel",
+          onClick: deleteDialog.hideDialog,
+        },
+        secondaryButton: {
+          text: "Delete",
+          onClick: handleDeleteAndClose,
+          className: "bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors font-medium",
+        },
+      });
     } else {
       // Delete immediately without confirmation
       await handleDeleteAndClose();
@@ -292,73 +343,30 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
         )}
       </AnimatePresence>
 
-      {/* Unsaved Changes Confirmation Dialog */}
-      <ConfirmationDialog
-        isOpen={showUnsavedChangesDialog}
-        title="Unsaved Changes"
-        message="You have unsaved changes. Would you like to save before closing?"
-        onClose={() => setShowUnsavedChangesDialog(false)}
-        primaryButton={{
-          text: "Save & Close",
-          onClick: handleSaveAndClose,
-          disabled: isSaving,
-        }}
-        secondaryButton={{
-          text: "Discard Changes",
-          onClick: handleDiscardChanges,
-          className:
-            "bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-colors font-medium",
-        }}
-      />
-
-      {/* Confirm Delete Dialog */}
-      <ConfirmationDialog
-        isOpen={showDeleteDialog}
-        title="Delete Application"
-        message="Are you sure you want to delete this application? This action cannot be undone."
-        onClose={() => setShowDeleteDialog(false)}
-        primaryButton={{
-          text: "Cancel",
-          onClick: () => {
-            setShowDeleteDialog(false);
-          },
-        }}
-        secondaryButton={{
-          text: "Delete",
-          onClick: () => handleDeleteAndClose(),
-          className:
-            "bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors font-medium",
-        }}
-      />
-
-      {/* Required Fields Validation Dialog */}
-      <ConfirmationDialog
-        isOpen={showRequiredFieldsDialog}
-        title="Missing Required Fields"
-        onClose={() => setShowRequiredFieldsDialog(false)}
-        primaryButton={{
-          text: "Continue Editing",
-          onClick: () => setShowRequiredFieldsDialog(false),
-        }}
-        secondaryButton={{
-          text: "Cancel",
-          onClick: () => setShowRequiredFieldsDialog(false),
-        }}
-      >
-        <div className="space-y-2">
-          <p className="text-gray-600 text-sm">
-            The following fields are required:
-          </p>
-          <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
-            {validateRequiredFields(jobApplication).map((field) => (
-              <li key={field}>{field}</li>
-            ))}
-          </ul>
-          <p className="text-gray-600 text-sm mt-3">
-            Please complete these fields before saving.
-          </p>
-        </div>
-      </ConfirmationDialog>
+      {/* Dialog Components */}
+      {unsavedChangesDialog.config && (
+        <ConfirmationDialog
+          isOpen={unsavedChangesDialog.isOpen}
+          {...unsavedChangesDialog.config}
+          onClose={unsavedChangesDialog.config.onClose || unsavedChangesDialog.hideDialog}
+        />
+      )}
+      
+      {deleteDialog.config && (
+        <ConfirmationDialog
+          isOpen={deleteDialog.isOpen}
+          {...deleteDialog.config}
+          onClose={deleteDialog.config.onClose || deleteDialog.hideDialog}
+        />
+      )}
+      
+      {validationDialog.config && (
+        <ConfirmationDialog
+          isOpen={validationDialog.isOpen}
+          {...validationDialog.config}
+          onClose={validationDialog.config.onClose || validationDialog.hideDialog}
+        />
+      )}
     </ApplicationWindowContext.Provider>
   );
 };
