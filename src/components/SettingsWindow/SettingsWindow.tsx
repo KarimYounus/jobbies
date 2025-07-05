@@ -4,6 +4,7 @@ import { useSettings } from "./SettingsContext";
 import SettingsHeader from "./SettingsHeader";
 import SettingItem from "./SettingItem";
 import ConfirmationDialog from "../General/ConfirmationDialog";
+import { useConfirmationDialog } from "../../hooks/useConfirmationDialog";
 import { defaultStatusItems } from "../../types/status-types";
 
 interface SettingsWindowProps {
@@ -13,8 +14,10 @@ interface SettingsWindowProps {
 
 const SettingsWindow: React.FC<SettingsWindowProps> = ({ isOpen, onClose }) => {
   const { settings, updateSetting, resetToDefaults, isLoading, error } = useSettings();
-  const [showResetDialog, setShowResetDialog] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  
+  // Dialog hook for reset confirmation
+  const resetDialog = useConfirmationDialog();
 
   // Handler for setting changes with proper typing
   const handleSettingChange = async <K extends keyof typeof settings>(
@@ -36,12 +39,30 @@ const SettingsWindow: React.FC<SettingsWindowProps> = ({ isOpen, onClose }) => {
     try {
       setIsSaving(true);
       await resetToDefaults();
-      setShowResetDialog(false);
+      resetDialog.hideDialog();
     } catch (err) {
       console.error("Failed to reset settings:", err);
     } finally {
       setIsSaving(false);
     }
+  };
+
+  // Show reset confirmation dialog
+  const showResetConfirmation = () => {
+    resetDialog.showDialog({
+      title: "Reset to Defaults",
+      message: "Are you sure you want to reset all settings to their default values? This action cannot be undone.",
+      primaryButton: {
+        text: "Reset",
+        onClick: handleResetToDefaults,
+        disabled: isSaving,
+        className: "bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors font-medium"
+      },
+      secondaryButton: {
+        text: "Cancel",
+        onClick: resetDialog.hideDialog
+      }
+    });
   };
 
   return (
@@ -58,7 +79,7 @@ const SettingsWindow: React.FC<SettingsWindowProps> = ({ isOpen, onClose }) => {
             {/* Header */}
             <SettingsHeader 
               onClose={onClose}
-              onReset={() => setShowResetDialog(true)}
+              onReset={showResetConfirmation}
               isSaving={isSaving}
               hasError={!!error}
             />
@@ -195,22 +216,13 @@ const SettingsWindow: React.FC<SettingsWindowProps> = ({ isOpen, onClose }) => {
           </div>
 
           {/* Reset Confirmation Dialog */}
-          <ConfirmationDialog
-            isOpen={showResetDialog}
-            title="Reset to Defaults"
-            message="Are you sure you want to reset all settings to their default values? This action cannot be undone."
-            onClose={() => setShowResetDialog(false)}
-            primaryButton={{
-              text: "Reset",
-              onClick: handleResetToDefaults,
-              disabled: isSaving,
-              className: "bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors font-medium"
-            }}
-            secondaryButton={{
-              text: "Cancel",
-              onClick: () => setShowResetDialog(false)
-            }}
-          />
+          {resetDialog.config && (
+            <ConfirmationDialog
+              isOpen={resetDialog.isOpen}
+              {...resetDialog.config}
+              onClose={resetDialog.config.onClose || resetDialog.hideDialog}
+            />
+          )}
         </motion.div>
       )}
     </AnimatePresence>
