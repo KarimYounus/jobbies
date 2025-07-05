@@ -9,11 +9,14 @@ import { applicationHandler } from "../../data/ApplicationHandler";
 import { StatusItem } from "../../types/status-types";
 import { useSettings } from "../SettingsWindow/SettingsContext";
 import { useConfirmationDialog } from "../../hooks/useConfirmationDialog";
-import { validateRequiredFields, detectApplicationChanges } from "../../utils/applicationValidation";
-import { 
-  createUnsavedChangesDialog, 
-  createDeleteConfirmationDialog, 
-  createValidationErrorDialog 
+import {
+  validateRequiredFields,
+  detectApplicationChanges,
+} from "../../utils/applicationValidation";
+import {
+  createUnsavedChangesDialog,
+  createDeleteConfirmationDialog,
+  createValidationErrorDialog,
 } from "../../utils/dialogConfigs";
 
 interface ApplicationWindowProps {
@@ -52,7 +55,7 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
   if (!job) {
     console.warn("No job application provided to ApplicationWindow");
     return null;
-  };
+  }
   const { settings } = useSettings();
 
   // Dialog hooks - each handles a specific dialog type
@@ -60,8 +63,9 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
   const deleteDialog = useConfirmationDialog();
   const validationDialog = useConfirmationDialog();
 
-
-  const [jobApplication, setJobApplication] = useState<JobApplication | null>(job);
+  const [jobApplication, setJobApplication] = useState<JobApplication | null>(
+    job
+  );
   const [isEditing, setIsEditing] = useState(createNew);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -120,7 +124,7 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
     if (!jobApplication || createNew) return; // Don't auto-save status changes for new applications
 
     try {
-      const updatedJob = { ...jobApplication, status: newStatus };      // Save immediately via ApplicationHandler
+      const updatedJob = { ...jobApplication, status: newStatus }; // Save immediately via ApplicationHandler
       await applicationHandler.updateApplication(updatedJob);
 
       // Update local state
@@ -132,7 +136,7 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
         }`
       );
     }
-  };  // Explicit save for form edits (EditContent) with validation
+  }; // Explicit save for form edits (EditContent) with validation
   const handleSave = async () => {
     if (!jobApplication) return;
 
@@ -255,7 +259,7 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
                         key="edit"
                         initial={{ opacity: 1, x: 500 }}
                         animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -500}}
+                        exit={{ opacity: 0, x: -500 }}
                         transition={{ duration: 0.3, ease: [0.85, 0, 0.15, 1] }}
                       >
                         <EditContent />
@@ -284,10 +288,13 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
         <ConfirmationDialog
           isOpen={unsavedChangesDialog.isOpen}
           {...unsavedChangesDialog.config}
-          onClose={unsavedChangesDialog.config.onClose || unsavedChangesDialog.hideDialog}
+          onClose={
+            unsavedChangesDialog.config.onClose ||
+            unsavedChangesDialog.hideDialog
+          }
         />
       )}
-      
+
       {deleteDialog.config && (
         <ConfirmationDialog
           isOpen={deleteDialog.isOpen}
@@ -295,12 +302,14 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
           onClose={deleteDialog.config.onClose || deleteDialog.hideDialog}
         />
       )}
-      
+
       {validationDialog.config && (
         <ConfirmationDialog
           isOpen={validationDialog.isOpen}
           {...validationDialog.config}
-          onClose={validationDialog.config.onClose || validationDialog.hideDialog}
+          onClose={
+            validationDialog.config.onClose || validationDialog.hideDialog
+          }
         />
       )}
     </ApplicationWindowContext.Provider>

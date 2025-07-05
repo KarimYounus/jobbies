@@ -50,20 +50,12 @@ const SettingsWindow: React.FC<SettingsWindowProps> = ({ isOpen, onClose }) => {
 
   // Show reset confirmation dialog
   const showResetConfirmation = () => {
-    resetDialog.showDialog({
-      title: "Reset to Defaults",
-      message: "Are you sure you want to reset all settings to their default values? This action cannot be undone.",
-      primaryButton: {
-        text: "Reset",
-        onClick: handleResetToDefaults,
-        disabled: isSaving,
-        className: "bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors font-medium"
-      },
-      secondaryButton: {
-        text: "Cancel",
-        onClick: resetDialog.hideDialog
-      }
-    });
+    const dialogConfig = createResetSettingsDialog(
+      handleResetToDefaults,
+      resetDialog.hideDialog,
+      isSaving
+    );
+    resetDialog.showDialog(dialogConfig);
   };
 
   return (
