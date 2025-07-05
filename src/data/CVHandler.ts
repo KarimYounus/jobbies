@@ -1,5 +1,4 @@
 import { CurriculumVitae } from "../types/job-application-types";
-import { cvCollection } from "./cv-collection";
 
 /**
  * Events emitted by the CVHandler for UI reactivity.
@@ -67,10 +66,8 @@ export class CVHandler extends EventTarget {
       this.isInitialized = true;
       this.dispatchEvent(new CustomEvent('cvs-loaded'));
     } catch (error) {
-      console.warn('Failed to load CVs from file, using fallback data:', error);
-      // Fallback to placeholder data for development
-      this.cvs = [...cvCollection];
-      this.isInitialized = true;
+      console.warn('Failed to load CVs from file', error);
+      this.isInitialized = false;
       this.dispatchEvent(new CustomEvent('cv-data-error', { detail: error }));
     }
   }

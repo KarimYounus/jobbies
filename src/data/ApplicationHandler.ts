@@ -1,5 +1,4 @@
 import { JobApplication } from "../types/job-application-types";
-import { applicationCollection } from "./application-collection";
 import { defaultStatusItems, StatusItem } from "../types/status-types";
 import { SortConfig } from "../types/sort-types";
 
@@ -74,13 +73,8 @@ export class ApplicationHandler extends EventTarget {
       console.log("Applications by status:", this.getApplicationsByStatus());
     } catch (error) {
       console.warn(
-        "Failed to load applications from file, using fallback data:",
-        error
-      );      // Fallback to placeholder data for development
-      this.applications = [...applicationCollection];
-      this.rebuildStatusGroups();
-      
-      this.isInitialized = true;
+        "Failed to load applications from file", error);
+      this.isInitialized = false;
       this.dispatchEvent(new CustomEvent("data-error", { detail: error }));
     }
   }

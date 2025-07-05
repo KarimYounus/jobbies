@@ -9,6 +9,7 @@ import { applicationHandler } from "../../data/ApplicationHandler";
 import { StatusItem } from "../../types/status-types";
 import { useSettings } from "../SettingsWindow/SettingsContext";
 import { useConfirmationDialog } from "../../hooks/useConfirmationDialog";
+import { validateRequiredFields, detectApplicationChanges } from "../../utils/applicationValidation";
 
 interface ApplicationWindowProps {
   jobApplication: JobApplication | null;
@@ -72,40 +73,6 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
     setHasUnsavedChanges(false);
   }, [job]);
 
-  // Helper function to check for required fields
-  const validateRequiredFields = (
-    application: JobApplication | null
-  ): string[] => {
-    if (!application) return [];
-
-    const missingFields: string[] = [];
-    if (!application.company?.trim()) missingFields.push("Company Name");
-    if (!application.position?.trim()) missingFields.push("Position Title");
-
-    return missingFields;
-  };
-
-  // Helper function to detect changes
-  const detectChanges = (
-    current: JobApplication | null,
-    initial: JobApplication | null
-  ): boolean => {
-    if (!current || !initial) return false;
-
-    // Compare key fields that indicate meaningful changes
-    return (
-      current.company !== initial.company ||
-      current.position !== initial.position ||
-      current.description !== initial.description ||
-      current.salary !== initial.salary ||
-      current.location !== initial.location ||
-      current.notes !== initial.notes ||
-      current.link !== initial.link ||
-      JSON.stringify(current.questions) !== JSON.stringify(initial.questions) ||
-      current.status.text !== initial.status.text
-    );
-  };
-
   // Field update method for application data edits
   // This method updates a specific field in the job application state and tracks changes
   const updateField = (field: keyof JobApplication, value: any) => {
@@ -114,8 +81,8 @@ const ApplicationWindow: React.FC<ApplicationWindowProps> = ({
 
       const updated = { ...prev, [field]: value };
 
-      // Update change tracking
-      setHasUnsavedChanges(detectChanges(updated, initialJobState));
+      // Update change tracking using utility function
+      setHasUnsavedChanges(detectApplicationChanges(updated, initialJobState));
 
       return updated;
     });
