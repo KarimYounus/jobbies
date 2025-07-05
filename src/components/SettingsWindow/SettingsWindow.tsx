@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSettings } from "./SettingsContext";
 import SettingsHeader from "./SettingsHeader";
@@ -7,6 +7,7 @@ import ConfirmationDialog from "../General/ConfirmationDialog";
 import { useConfirmationDialog } from "../../hooks/useConfirmationDialog";
 import { createResetSettingsDialog } from "../../utils/dialogConfigs";
 import { defaultStatusItems } from "../../types/status-types";
+import { applyTheme } from "../../utils/themeManager";
 
 interface SettingsWindowProps {
   isOpen: boolean;
@@ -28,12 +29,24 @@ const SettingsWindow: React.FC<SettingsWindowProps> = ({ isOpen, onClose }) => {
     try {
       setIsSaving(true);
       await updateSetting(key, value);
+      
+      // Apply theme immediately if theme setting was changed
+      if (key === 'theme') {
+        applyTheme(value as 'light' | 'dark');
+      }
     } catch (err) {
       console.error("Failed to update setting:", err);
     } finally {
       setIsSaving(false);
     }
   };
+
+  // Apply theme when settings are loaded
+  useEffect(() => {
+    if (settings && !isLoading) {
+      applyTheme(settings.theme);
+    }
+  }, [settings.theme, isLoading]);
 
   // Handler for reset to defaults
   const handleResetToDefaults = async () => {
@@ -149,6 +162,27 @@ const SettingsWindow: React.FC<SettingsWindowProps> = ({ isOpen, onClose }) => {
                         value={settings.confirmDeleteActions}
                         onChange={(value: boolean) => handleSettingChange('confirmDeleteActions', value)}
                         disabled={isSaving}
+                      />
+                    </div>
+                  </section>
+
+                  {/* Display Preferences Section */}
+                  <section>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4 border-b border-gray-200 pb-2">
+                      Display Preferences
+                    </h3>
+                    <div className="space-y-4">
+                      <SettingItem
+                        type="dropdown"
+                        label="Theme"
+                        description="Choose between light and dark theme"
+                        value={settings.theme}
+                        onChange={(value: string) => handleSettingChange('theme', value as 'light' | 'dark')}
+                        disabled={isSaving}
+                        options={[
+                          { value: 'light', label: 'Light Theme' },
+                          { value: 'dark', label: 'Dark Theme' }
+                        ]}
                       />
                     </div>
                   </section>

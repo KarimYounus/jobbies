@@ -8,7 +8,7 @@ import {
   mdiTextBoxOutline,
 } from "@mdi/js";
 import { applicationHandler } from "./data/ApplicationHandler";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { JobApplication } from "./types/job-application-types";
 import ApplicationWindow from "./components/ApplicationWindow/ApplicationWindow";
 import { SortOverlay } from "./components/HomeView/SortOverlay";
@@ -19,6 +19,7 @@ import { SettingsProvider, useSettings } from "./components/SettingsWindow/Setti
 import { useApplicationData } from "./hooks/useApplicationData";
 import { useSettingsIntegration } from "./hooks/useSettingsIntegration";
 import CVCollectionWindow from "./components/CVCollection/CVCollectionWindow";
+import { initializeTheme } from "./utils/themeManager";
 
 function App() {
   return (
@@ -30,6 +31,13 @@ function App() {
 
 function AppContent() {
   const { settings } = useSettings();
+
+  // Initialize theme when settings are loaded
+  useEffect(() => {
+    if (settings) {
+      initializeTheme(settings.theme);
+    }
+  }, [settings?.theme]);
 
   // UI state
   const [newApplication, setNewApplication] = useState<JobApplication | null>(null);
@@ -95,33 +103,33 @@ function AppContent() {
         />
 
         {/* Buttons */}
-        <motion.div className="flex gap-4 pr-5">
+        <motion.div className="flex space-x-4 px-4 rounded-4xl p-2 mx-10">
           <AnimatedButton
             icon={mdiNotePlusOutline}
             caption="Add Job"
-            className="p-2 mx-3 hover:bg-teal-200 rounded-lg transition-colors cursor-pointer"
-            iconClassName="text-gray-200 hover:text-gray-800"
+            className="p-2 hover:bg-teal-200 rounded-4xl transition-colors cursor-pointer"
+            iconClassName="text-gray-100"
             onClick={handleAddJobClick}
           />
           <AnimatedButton
             icon={mdiSort}
             caption="Sort Applications"
-            className="p-2 mx-3 hover:bg-teal-200 rounded-lg transition-colors cursor-pointer"
-            iconClassName="text-gray-200 hover:text-gray-800"
+            className="p-2 hover:bg-teal-200 rounded-4xl transition-colors cursor-pointer"
+            iconClassName="text-gray-100"
             onClick={() => setIsSortOverlayOpen(true)}
           />
           <AnimatedButton
             icon={mdiTextBoxOutline}
             caption="CV Collection"
-            className="p-2 mx-3 hover:bg-teal-200 rounded-lg transition-colors cursor-pointer"
-            iconClassName="text-gray-200 hover:text-gray-800"
+            className="p-2 hover:bg-teal-200 rounded-4xl transition-colors cursor-pointer"
+            iconClassName="text-gray-100"
             onClick={() => setIsCVCollectionOpen(true)}
           />
           <AnimatedButton
             icon={mdiCogOutline}
             caption="Settings"
-            className="p-2 mx-3 hover:bg-teal-200 rounded-lg transition-colors cursor-pointer"
-            iconClassName="text-gray-200 hover:text-gray-800"
+            className="p-2 hover:bg-teal-200 rounded-4xl transition-colors cursor-pointer"
+            iconClassName="text-gray-100"
             onClick={() => setIsSettingsOpen(true)}
           />
         </motion.div>

@@ -17,6 +17,9 @@ export interface SettingsConfig {
     field: 'appliedDate' | 'company' | 'position';
     order: 'asc' | 'desc';
   };
+
+  // Theme preferences
+  theme: 'light' | 'dark';
 }
 
 /**
@@ -32,7 +35,8 @@ export const defaultSettings: SettingsConfig = {
   defaultSortPreference: {
     field: 'appliedDate',
     order: 'desc'
-  }
+  },
+  theme: 'light'
 };
 
 /**
@@ -48,6 +52,7 @@ export const validateSettings = (settings: Partial<SettingsConfig>): SettingsCon
     defaultSortPreference: {
       field: settings.defaultSortPreference?.field ?? defaultSettings.defaultSortPreference.field,
       order: settings.defaultSortPreference?.order ?? defaultSettings.defaultSortPreference.order
-    }
+    },
+    theme: settings.theme === 'dark' || settings.theme === 'light' ? settings.theme : defaultSettings.theme
   };
 };

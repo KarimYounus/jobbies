@@ -17,7 +17,7 @@ import { StatusItem } from "../../../types/status-types";
 // Key information section
 function KeyInformation(job: JobApplication) {
   return (
-    <div className="flex items-center justify-between space-x-6 mx-3">
+    <div className="flex items-center justify-between space-x-6 mx-8">
       {/* Days Ago */}
       <div className="flex items-center space-x-3">
         <Icon path={mdiCalendarClock} size={1} className="text-gray-600" />
