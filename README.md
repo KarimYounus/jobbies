@@ -2,7 +2,7 @@
 
 A sleek, cross-platform desktop application built with Electron and React for tracking job applications with style and efficiency.
 
-![Jobbies Screenshot](./docs/screenshot.png) <!-- Add screenshot when available -->
+<img width="400" alt="image" src="https://github.com/user-attachments/assets/31622649-0112-4d32-8315-2351ee625404" />
 
 ## ✨ Features
 
@@ -56,28 +56,6 @@ This will create distributable packages in the `release/` directory for your pla
 | **Build Tool** | Vite |
 | **Language** | TypeScript |
 
-## 📁 Project Structure
-
-```
-jobbies/
-├── src/
-│   ├── components/          # React components
-│   │   ├── AnimatedButton.tsx
-│   │   ├── JobList.tsx
-│   │   ├── JobListItem.tsx
-│   │   └── JobView.tsx
-│   ├── types/              # TypeScript type definitions
-│   │   ├── job-types.ts
-│   │   └── status-types.ts
-│   ├── App.tsx             # Main application component
-│   └── main.tsx            # React entry point
-├── electron/               # Electron main process files
-│   ├── main.ts             # Main process
-│   └── preload.ts          # Preload script
-├── docs/                   # Documentation
-└── dist-electron/          # Built Electron files
-```
-
 ## 🎯 Usage
 
 ### Adding a New Application
@@ -90,18 +68,18 @@ jobbies/
 
 ### Managing Applications
 
-- **View Details**: Click on any job card to see full details
+- **View Details**: Click on any job item to see full details
 - **Edit Applications**: Use the edit button in the detailed view
-- **Filter by Status**: Expand different status categories to see relevant applications
-- **File Management**: Click on CV previews to view full-size documents
+- **Filtered by Status**: Expand different status categories to see relevant applications
 
 ### Application Statuses
 
 - **Applied**: Recently submitted applications
-- **Interview**: Applications that have progressed to interview stage
-- **Rejected**: Unfortunately declined applications
+- **Assessment Stage**: Applications that have progressed to the technical assessment stage
+- **Interview Stage**: Applications that have progressed to the interview stage
 - **Offer**: Successful applications with job offers
-- **Archived**: Completed or outdated applications
+- **No Response**: Where most of my applications end up ...
+- **Rejected**: Applications that have been rejected
 
 ## 🔧 Development
 
@@ -109,6 +87,7 @@ jobbies/
 
 - `npm run dev` - Start development server with hot reload
 - `npm run build` - Build for production and create distributable packages
+- `build:portable`: - Build a portable version without the need for installtion,
 - `npm run lint` - Run ESLint for code quality checks
 - `npm run preview` - Preview the built application
 
@@ -121,16 +100,6 @@ The application follows a modular component architecture:
 3. **Styling**: Use Tailwind CSS classes for consistent styling
 4. **Animation**: Implement smooth transitions using Framer Motion
 
-## 📦 Building & Distribution
-
-The application uses `electron-builder` for packaging:
-
-- **Windows**: Creates NSIS installer (.exe)
-- **macOS**: Creates DMG installer
-- **Linux**: Creates AppImage
-
-Build artifacts are saved to `release/{version}/` directory.
-
 ## 🔒 Privacy & Security
 
 - **Offline-First**: All data stored locally, no cloud dependencies
@@ -141,7 +110,7 @@ Build artifacts are saved to `release/{version}/` directory.
 
 Currently uses local JSON storage with plans for:
 - SQLite database integration
-- Optional cloud sync (Dropbox/Firebase)
+- Optional cloud sync (Firebase)
 - Data export/import functionality
 
 ## 🤝 Contributing
